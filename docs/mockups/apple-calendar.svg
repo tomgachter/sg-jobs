@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 540" role="img" aria-labelledby="title desc">
+  <title id="title">Apple Calendar Wireframe</title>
+  <desc id="desc">Daily agenda showing a synced job event with emoji in the title and structured notes snippet.</desc>
+  <rect width="720" height="540" fill="#f1f5f9"/>
+  <rect x="48" y="40" width="624" height="64" fill="#0f172a" rx="16"/>
+  <text x="80" y="80" font-family="SF Pro Display,Arial,sans-serif" font-size="28" fill="#ffffff">Dienstag 7. Oktober</text>
+  <rect x="48" y="124" width="624" height="96" fill="#ffffff" stroke="#94a3b8" stroke-width="2" rx="18"/>
+  <text x="72" y="160" font-family="SF Pro Text,Arial,sans-serif" font-size="26" fill="#0f172a">🔴 Zürich | 5009 | Küng AG</text>
+  <text x="72" y="192" font-family="SF Pro Text,Arial,sans-serif" font-size="18" fill="#475569">Ort · Zürich</text>
+  <rect x="48" y="236" width="624" height="200" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" rx="18"/>
+  <text x="72" y="272" font-family="SF Pro Text,Arial,sans-serif" font-size="20" fill="#0f172a">Notizen</text>
+  <text x="72" y="304" font-family="SF Mono,Consolas,monospace" font-size="16" fill="#1e293b">LieferscheinNr: 5009</text>
+  <text x="72" y="328" font-family="SF Mono,Consolas,monospace" font-size="16" fill="#1e293b">AuftragNr: -</text>
+  <text x="72" y="352" font-family="SF Mono,Consolas,monospace" font-size="16" fill="#1e293b">Kunde: Küng AG</text>
+  <text x="72" y="376" font-family="SF Mono,Consolas,monospace" font-size="16" fill="#1e293b">Telefon: +41 79 123 45 67</text>
+  <text x="72" y="400" font-family="SF Mono,Consolas,monospace" font-size="16" fill="#1e293b">Job-URL: https://example.tld/jobs/abc</text>
+  <rect x="48" y="460" width="624" height="52" fill="#e2e8f0" rx="12"/>
+  <text x="72" y="492" font-family="SF Pro Text,Arial,sans-serif" font-size="18" fill="#1e293b">Blocker Kalender · grau hinterlegt</text>
+</svg>

@@ -1,0 +1,45 @@
+{
+  "info": {
+    "name": "SG Jobs API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Create job",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/wp-json/sgjobs/v1/jobs",
+          "host": ["{{baseUrl}}"],
+          "path": ["wp-json", "sgjobs", "v1", "jobs"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"delivery_note_nr\": \"5009\",\n  \"team_id\": 1,\n  \"starts_at\": \"2025-10-07T08:00:00+02:00\",\n  \"ends_at\": \"2025-10-07T10:00:00+02:00\",\n  \"location_city\": \"Zürich\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Mark job done",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{installerToken}}" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/wp-json/sgjobs/v1/jobs/42/done",
+          "host": ["{{baseUrl}}"],
+          "path": ["wp-json", "sgjobs", "v1", "jobs", "42", "done"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"comment\": \"Serien: QK-123456\"\n}"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+LieferscheinNr: {delivery_note_nr}
+AuftragNr: {sales_order_nr or -}
+Kunde: {customer_name}
+Telefon: {phone1; phone2; ...}
+Adresse: {address_line}
+Hinweise: {notes}
+Job-URL: {public_job_url}
+Status: {status}
