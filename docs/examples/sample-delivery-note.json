@@ -1,0 +1,32 @@
+{
+  "id": 7810,
+  "document_nr": "5009",
+  "contact_name": "Elektro Müller AG",
+  "delivery_address": {
+    "address_line1": "Badenerstrasse 21",
+    "zip": "8004",
+    "city": "Zürich",
+    "country": "Schweiz",
+    "phone": "+41 44 111 22 33",
+    "mobile": null
+  },
+  "positions": [
+    {
+      "id": 2001,
+      "article_nr": "KT-42",
+      "text": "Klimagerät Inneneinheit",
+      "description": "Montage gemäss Offerte",
+      "amount": 1,
+      "unit_name": "Stk"
+    },
+    {
+      "id": 2002,
+      "article_nr": "KT-43",
+      "text": "Kupferleitung",
+      "description": "5m Rolle",
+      "amount": 1.5,
+      "unit_name": "m"
+    }
+  ],
+  "reference": "SO-42015"
+}

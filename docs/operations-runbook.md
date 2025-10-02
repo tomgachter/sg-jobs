@@ -1,0 +1,52 @@
+# Operations Runbook
+
+## Cron jobs
+
+- `sg_jobs_bexio_payment_sync`: runs every 15 minutes. Ensure WP Cron or system cron triggers `wp cron event run` regularly.
+- Optional `sg_jobs_caldav_watch`: poll for external edits; disabled by default.
+
+## Secret rotation
+
+1. Generate new bexio API token in the bexio admin interface.
+2. Update `.env` and the WordPress settings page simultaneously.
+3. Regenerate the JWT secret if a device is compromised. All existing magic links become invalid.
+4. Rotate CalDAV password and update the service account in Nextcloud plus WP settings.
+
+## Monitoring
+
+- Watch PHP error logs for `[SG Jobs]` entries.
+- Action Scheduler UI shows queued tasks and retries.
+- CalDAV server logs highlight authentication or permission problems.
+
+## Troubleshooting
+
+### bexio rate limits
+
+- Symptoms: HTTP 429, jobs fail to import.
+- Action: Inspect retry headers, confirm queue backoff (200ms → 3s). Consider staggering imports and contacting bexio support if sustained.
+
+### CalDAV 4xx/5xx responses
+
+- Ensure service account has write access to team calendars.
+- Validate VEVENT payloads with `cadaver` or `curl` using the same credentials.
+
+### Magic link invalid
+
+- Check plugin settings for JWT secret mismatch between environments.
+- Confirm that the token has not expired and that the URL remains HTTPS.
+
+### Payment sync not running
+
+- Execute `wp cron event run sg_jobs_bexio_payment_sync` manually.
+- Check bexio invoice status with the API explorer and ensure invoices share the same document number as `sales_order_nr`.
+
+## Backoff strategy
+
+- bexio requests: exponential delay doubling from 200ms up to 3s with respect for `Retry-After` header.
+- CalDAV writes: retries scheduled via Action Scheduler with `2^n` minute spacing and capped at 30 minutes.
+
+## Disaster recovery
+
+- Database: ensure regular backups of WordPress tables, especially `wp_sg_jobs*`.
+- CalDAV: Nextcloud already versions events; keep daily snapshots.
+- Re-seed board by re-importing delivery notes; job creation is idempotent due to delivery note numbers and `Idempotency-Key`.

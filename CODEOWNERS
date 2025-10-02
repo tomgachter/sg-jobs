@@ -1,0 +1,9 @@
+# Default owners for the SG Jobs plugin repository
+* @sgops/engineering
+
+# Frontend assets
+/src/Ui/Board/assets/ @sgops/frontend
+/src/Ui/JobSheet/assets/ @sgops/frontend
+
+# Infrastructure integrations
+/src/Infra/ @sgops/platform

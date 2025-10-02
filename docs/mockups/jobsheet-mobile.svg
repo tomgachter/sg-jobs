@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 720" role="img" aria-labelledby="title desc">
+  <title id="title">Job Sheet PWA Wireframe</title>
+  <desc id="desc">Mobile job sheet showing customer details, phone buttons, address, positions and a large done action.</desc>
+  <rect width="360" height="720" fill="#0f172a" rx="36"/>
+  <rect x="12" y="24" width="336" height="672" fill="#f8fafc" rx="28"/>
+  <text x="72" y="96" font-family="Arial,Helvetica,sans-serif" font-size="26" fill="#0f172a">🔴 Lieferschein 5009</text>
+  <text x="36" y="138" font-family="Arial,Helvetica,sans-serif" font-size="16" fill="#1e293b">Küng AG · Zürich</text>
+  <rect x="36" y="160" width="288" height="44" fill="#0ea5e9" rx="12"/>
+  <text x="56" y="188" font-family="Arial,Helvetica,sans-serif" font-size="18" fill="#ffffff">📞 +41 79 123 45 67</text>
+  <rect x="36" y="212" width="288" height="44" fill="#0ea5e9" rx="12"/>
+  <text x="56" y="240" font-family="Arial,Helvetica,sans-serif" font-size="18" fill="#ffffff">📞 +41 43 555 77 22</text>
+  <rect x="36" y="272" width="288" height="64" fill="#e2e8f0" rx="16"/>
+  <text x="56" y="300" font-family="Arial,Helvetica,sans-serif" font-size="16" fill="#1e293b">Adresse: Lagerstrasse 12, Zürich</text>
+  <rect x="36" y="352" width="288" height="160" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" rx="16"/>
+  <text x="56" y="384" font-family="Arial,Helvetica,sans-serif" font-size="18" fill="#0f172a">Positionen</text>
+  <text x="56" y="416" font-family="Arial,Helvetica,sans-serif" font-size="14" fill="#334155">· Montage Wärmepumpe</text>
+  <text x="56" y="444" font-family="Arial,Helvetica,sans-serif" font-size="14" fill="#334155">· Leitungsprüfung</text>
+  <rect x="36" y="528" width="288" height="72" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" rx="16"/>
+  <text x="56" y="560" font-family="Arial,Helvetica,sans-serif" font-size="16" fill="#0f172a">Kommentar (Seriennummer)</text>
+  <rect x="72" y="624" width="216" height="64" fill="#22c55e" rx="32"/>
+  <text x="120" y="666" font-family="Arial,Helvetica,sans-serif" font-size="26" fill="#ffffff">✅ Fertig</text>
+</svg>
