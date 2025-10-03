@@ -37,11 +37,16 @@ class Bootstrap
     public function init(): void
     {
         add_action('plugins_loaded', [$this, 'onPluginsLoaded']);
+        $pluginFile = defined('SGJOBS_MAIN_FILE')
+            ? SGJOBS_MAIN_FILE
+            : (defined('SGJOBS_PLUGIN_FILE') ? SGJOBS_PLUGIN_FILE : __FILE__);
+
         if (! defined('SGJOBS_PLUGIN_FILE')) {
-            define('SGJOBS_PLUGIN_FILE', __FILE__);
+            define('SGJOBS_PLUGIN_FILE', $pluginFile);
         }
-        register_activation_hook(SGJOBS_PLUGIN_FILE, [$this, 'onActivate']);
-        register_deactivation_hook(SGJOBS_PLUGIN_FILE, [$this, 'onDeactivate']);
+
+        register_activation_hook($pluginFile, [$this, 'onActivate']);
+        register_deactivation_hook($pluginFile, [$this, 'onDeactivate']);
     }
 
     public function onPluginsLoaded(): void

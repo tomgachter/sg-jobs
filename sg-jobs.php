@@ -17,8 +17,16 @@ if (! defined('ABSPATH')) {
 
 require_once __DIR__ . '/vendor/autoload.php';
 
+if (! defined('SGJOBS_MAIN_FILE')) {
+    define('SGJOBS_MAIN_FILE', __FILE__);
+}
+
+if (! defined('SGJOBS_VERSION')) {
+    define('SGJOBS_VERSION', '0.1.0');
+}
+
 if (! defined('SGJOBS_PLUGIN_FILE')) {
-    define('SGJOBS_PLUGIN_FILE', __FILE__);
+    define('SGJOBS_PLUGIN_FILE', SGJOBS_MAIN_FILE);
 }
 
 use SGJobs\Bootstrap;
