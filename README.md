@@ -10,9 +10,18 @@ SG Jobs bridges bexio delivery notes with a scheduling cockpit and mobile job ex
 - **Live bexio reads** with retry/backoff, Action Scheduler queues and audit logging for every state change.
 - **Payment sync** that marks jobs 💰 when the linked bexio invoice has been paid.
 
-## Getting started
+## Onboarding
 
-### 1. Install dependencies
+1. **Plugin aktivieren** – Lade das Plugin nach `wp-content/plugins` und aktiviere **SG Jobs** im WordPress-Backend. Aktivierung legt benötigte Tabellen und Cronjobs an.
+2. **JWT Secret setzen** – Navigiere zu **Einstellungen → SG Jobs** und hinterlege ein mindestens 32 Zeichen langes Secret für Magic Links. Das Secret wird ausschließlich serverseitig verwendet und darf nicht in Repos oder Dokus landen.
+3. **CalDAV Basisdaten eintragen** – Trage Basis-URL, Service-User und Passwort für den CalDAV-Zugang ein. Optionale Secrets können über `wp-config.php` oder ENV-Variablen gesetzt werden.
+4. **Kalender teilen** – Teile die Team-Kalender im Nextcloud/CalDAV Backend vom Owner an den Service-User (z. B. `caldav-sync`) mit Bearbeitungsrechten.
+5. **Gemountete Pfade übernehmen** – Verwende die vom Service-User gemounteten Pfade (`/remote.php/dav/calendars/caldav-sync/...`) für Ausführungs- und Blocker-Kalender, damit Cronjobs und Clients konsistent zugreifen können.
+6. **Teams eintragen** – Erfasse in den Einstellungen jedes Team mit CalDAV-Principal, Execution- und Blocker-Slug. Lege die Slugs exakt wie in Nextcloud an; ein Hinweis im UI erinnert daran.
+7. **Healthcheck ausführen** – Nutze den Healthcheck im Admin („Test CalDAV/Bexio“), um Anmelde- und Freigabeprobleme zu erkennen. Ergebnisse werden farblich nach HTTP-Status codiert.
+8. **Dispo-Board testen** – Rufe das Dispo-Board mit dem Shortcode `[sg_jobs_board]` auf (erfordert Capability `sgjobs_manage`) und führe einen Testlauf durch. Prüfe außerdem das Installer-Board über `[sg_jobs_mine]`.
+
+## Development setup
 
 ```bash
 composer install
@@ -20,43 +29,21 @@ npm install
 npm run build
 ```
 
-### 2. Configure environment
-
-Copy `config/example.env` to `.env` and provide production credentials. Keys must match the WordPress settings page.
-
-### 3. Activate the plugin
-
-Upload the plugin folder to `wp-content/plugins`, then activate **SG Jobs** in the WordPress admin. During activation database tables are created and required cron hooks are registered.
-
-### 4. Configure settings
-
-Navigate to **Settings → SG Jobs** and enter:
-
-- bexio base URL and API token.
-- CalDAV base URL, username and password for the service account.
-- Team definitions with CalDAV principal, execution calendar path and blocker calendar path. Verwenden Sie bei Service-Accounts wie `caldav-sync` die gemounteten Freigaben unter `/remote.php/dav/calendars/caldav-sync/...` anstatt der ursprünglichen Owner-Pfade.
-- JWT secret (32+ chars) and expiry days for magic links.
-
-### 5. Place shortcodes
-
-Add the shortcodes to appropriate WordPress pages:
-
-- `[sg_jobs_board]` for the disposition board (requires the `sgjobs_manage` capability).
-- `[sg_jobs_mine]` for the “My jobs today” PWA view (restricted to users with a team magic link).
-
-### 6. Enable cron jobs
-
-Ensure WordPress cron or a system cron triggers `wp cron event run sg_jobs_bexio_payment_sync` at least every 15 minutes. Optional: schedule the CalDAV watcher if external calendar edits must be reconciled.
-
-### 7. Connect Apple Calendar
-
-Subscribe to each team execution calendar and its blocker calendar in Apple Calendar. Jobs will show the emoji status in the title and the structured notes block in the description.
+Konfigurationen für bexio, CalDAV und JWT werden über die WordPress-Settings oder Umgebungsvariablen vorgenommen. Token oder Passwörter gehören nie ins Repository.
 
 ## Security notes
 
 - Magic link JWTs are signed server-side only and scoped to job or team access.
 - All REST endpoints validate capabilities or JWT scopes and enforce idempotency via the `Idempotency-Key` header.
 - No API secrets are ever exposed to the browser bundle; the client communicates with WordPress REST endpoints exclusively.
+
+## Troubleshooting
+
+| Symptom | Ursache | Lösung |
+|---------|---------|--------|
+| 207/401/403/404 bei PROPFIND | Passwort, Freigabe oder Slug falsch | Passwort prüfen, Kalender teilen und den Slug exakt aus Nextcloud übernehmen |
+| `count(): Argument #1 ($value) must be of type Countable` | Option war noch als JSON-String gespeichert | Migration/Normalizer ausführen und Option erneut speichern |
+| `Too few arguments to function JwtService` | Älterer Konstruktor aus Legacy-Version | Aktuelle Plugin-Dateien deployen – neuer Konstruktor akzeptiert optionale Parameter |
 
 ## Acceptance checklist
 

@@ -10,7 +10,13 @@ module.exports = {
     'airbnb/hooks',
     'airbnb-typescript'
   ],
+  ignorePatterns: ['public/**/*.js'],
   rules: {
-    'react/react-in-jsx-scope': 'off'
+    'react/react-in-jsx-scope': 'off',
+    'react/function-component-definition': ['error', {
+      namedComponents: 'arrow-function',
+      unnamedComponents: 'arrow-function'
+    }],
+    'no-console': ['error', { allow: ['warn', 'error'] }]
   }
 };

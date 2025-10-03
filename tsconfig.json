@@ -3,7 +3,11 @@
   "compilerOptions": {
     "jsx": "react-jsx",
     "moduleResolution": "node",
-    "baseUrl": "."
+    "baseUrl": ".",
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "forceConsistentCasingInFileNames": true
   },
   "include": ["src/Ui/**/*.ts", "src/Ui/**/*.tsx"],
   "exclude": ["node_modules", "dist"]

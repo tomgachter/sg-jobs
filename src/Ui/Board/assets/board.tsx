@@ -6,8 +6,16 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import dayjs from 'dayjs';
 
+type ApiJobEvent = {
+  id: string | number;
+  title: string;
+  start: string;
+  end: string;
+  status: string;
+};
+
 type JobEvent = {
-  id: number;
+  id: string;
   title: string;
   start: string;
   end: string;
@@ -18,10 +26,19 @@ const BoardApp: React.FC = () => {
   const [events, setEvents] = useState<JobEvent[]>([]);
 
   useEffect(() => {
-    fetch('/wp-json/sgjobs/v1/jobs?date=' + dayjs().format('YYYY-MM-DD'))
+    const today = dayjs().format('YYYY-MM-DD');
+    fetch(`/wp-json/sgjobs/v1/jobs?date=${today}`)
       .then((res) => res.json())
-      .then((data) => setEvents(data.jobs || []))
-      .catch((err) => console.error('Failed loading jobs', err));
+      .then((data) => {
+        const parsed: ApiJobEvent[] = Array.isArray(data.jobs) ? data.jobs : [];
+        setEvents(
+          parsed.map((event) => ({
+            ...event,
+            id: String(event.id),
+          })),
+        );
+      })
+      .catch((error) => console.error('Failed loading jobs', error));
   }, []);
 
   return (
