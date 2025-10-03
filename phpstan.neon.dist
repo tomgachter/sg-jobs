@@ -3,6 +3,7 @@ parameters:
     paths:
         - src
     tmpDir: var/phpstan
+    memoryLimit: '1G'
 includes:
     - vendor/szepeviktor/phpstan-wordpress/extension.neon
     - phpstan-baseline.neon

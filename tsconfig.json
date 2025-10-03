@@ -7,7 +7,8 @@
     "strict": true,
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "types": ["node", "react", "react-dom"]
   },
   "include": ["src/Ui/**/*.ts", "src/Ui/**/*.tsx"],
   "exclude": ["node_modules", "dist"]
