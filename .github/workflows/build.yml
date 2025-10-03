@@ -15,7 +15,8 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'   # keine cache-Option ohne lockfile
+          node-version: '20'
+          cache: 'npm'
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -23,21 +24,22 @@ jobs:
           php-version: '8.2'
           tools: composer
 
-      - name: Install npm deps & build
-        run: |
-          npm install
-          npm run build
+      - name: Install npm dependencies
+        run: npm ci
 
-      - name: Install composer deps
+      - name: Build assets
+        run: npm run build
+
+      - name: Install composer dependencies
         run: composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
 
       - name: Pack plugin artifact
         run: |
           mkdir -p artifact
-          zip -r artifact/sg-jobs.zip . -x ".git/*" "node_modules/*" ".github/*"
+          zip -r artifact/sg-jobs-build.zip sg-jobs.php vendor dist src public
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: sg-jobs
-          path: artifact/sg-jobs.zip
+          path: artifact/sg-jobs-build.zip
