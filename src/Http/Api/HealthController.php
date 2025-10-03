@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace SGJobs\Http\Api;
 
+use SGJobs\Infra\Bexio\BexioClient;
+use SGJobs\Infra\Bexio\BexioService;
 use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -32,6 +34,30 @@ class HealthController
         $errors = [];
         $ok = true;
         $caldavStatus = [];
+
+        $bexioStatus = $this->checkBexioConfiguration();
+        if (! $bexioStatus['configured']) {
+            $ok = false;
+            $errors[] = __('Bexio Zugangsdaten sind unvollständig.', 'sg-jobs');
+        } elseif ($bexioStatus['error'] !== null) {
+            $ok = false;
+            $errors[] = $bexioStatus['error'];
+        }
+
+        $queueStatus = $this->inspectQueue();
+        if ($queueStatus['error'] !== null) {
+            $ok = false;
+            $errors[] = $queueStatus['error'];
+        }
+
+        $cronStatus = $this->inspectPaymentSyncCron();
+        if (! $cronStatus['scheduled']) {
+            $ok = false;
+            $errors[] = __('Cron-Event für Zahlungsabgleich ist nicht geplant.', 'sg-jobs');
+        } elseif ($cronStatus['overdue']) {
+            $ok = false;
+            $errors[] = __('Cron-Event für Zahlungsabgleich ist überfällig.', 'sg-jobs');
+        }
 
         $secret = $this->getConfiguredSecret();
         if ($secret === '') {
@@ -112,6 +138,9 @@ class HealthController
         return new WP_REST_Response([
             'ok' => $ok,
             'caldav' => $caldavStatus,
+            'bexio' => $bexioStatus,
+            'queue' => $queueStatus,
+            'cron' => $cronStatus,
             'errors' => $errors,
         ]);
     }
@@ -187,5 +216,166 @@ class HealthController
         }
 
         return rtrim($baseUrl, '/') . '/' . ltrim($path, '/');
+    }
+
+    /**
+     * @return array{configured:bool, ok:bool, error:?string}
+     */
+    private function checkBexioConfiguration(): array
+    {
+        $options = get_option('sg_jobs_bexio', []);
+        $baseUrl = '';
+        $token = '';
+        if (is_array($options)) {
+            $baseUrl = trim((string) ($options['base_url'] ?? ''));
+            $token = trim((string) ($options['token'] ?? ''));
+        }
+
+        if ($baseUrl === '') {
+            $baseUrl = trim((string) (getenv('BEXIO_BASE_URL') ?: ''));
+        }
+
+        if ($token === '') {
+            $token = trim((string) (getenv('BEXIO_API_TOKEN') ?: ''));
+        }
+
+        $configured = $baseUrl !== '' && $token !== '';
+
+        if (! $configured) {
+            return [
+                'configured' => false,
+                'ok' => false,
+                'error' => null,
+            ];
+        }
+
+        $service = new BexioService(new BexioClient());
+        $result = $service->ping();
+
+        if ($result instanceof WP_Error) {
+            return [
+                'configured' => true,
+                'ok' => false,
+                'error' => sprintf(
+                    /* translators: %s: error message */
+                    __('Bexio API nicht erreichbar: %s', 'sg-jobs'),
+                    $result->get_error_message()
+                ),
+            ];
+        }
+
+        return [
+            'configured' => true,
+            'ok' => true,
+            'error' => null,
+        ];
+    }
+
+    /**
+     * @return array{supported:bool, ok:bool, error:?string, backlog:array<string,int>}
+     */
+    private function inspectQueue(): array
+    {
+        if (! class_exists('ActionScheduler') || ! class_exists('ActionScheduler_Store')) {
+            return [
+                'supported' => false,
+                'error' => __('Action Scheduler ist nicht verfügbar.', 'sg-jobs'),
+                'ok' => false,
+                'backlog' => [],
+            ];
+        }
+
+        try {
+            $store = \ActionScheduler::store();
+        } catch (\Throwable $exception) {
+            return [
+                'supported' => true,
+                'ok' => false,
+                'error' => sprintf(
+                    /* translators: %s: error message */
+                    __('Action Scheduler konnte nicht initialisiert werden: %s', 'sg-jobs'),
+                    $exception->getMessage()
+                ),
+                'backlog' => [],
+            ];
+        }
+
+        $statuses = [
+            'pending' => \ActionScheduler_Store::STATUS_PENDING,
+            'in_progress' => \ActionScheduler_Store::STATUS_IN_PROGRESS,
+            'failed' => \ActionScheduler_Store::STATUS_FAILED,
+        ];
+
+        $backlog = [];
+
+        try {
+            foreach ($statuses as $key => $status) {
+                $backlog[$key] = (int) $store->query_actions([
+                    'group' => 'sg-jobs',
+                    'status' => $status,
+                ], 'count');
+            }
+        } catch (\Throwable $exception) {
+            return [
+                'supported' => true,
+                'ok' => false,
+                'error' => sprintf(
+                    /* translators: %s: error message */
+                    __('Action Scheduler Abfrage fehlgeschlagen: %s', 'sg-jobs'),
+                    $exception->getMessage()
+                ),
+                'backlog' => [],
+            ];
+        }
+
+        $error = null;
+        if (($backlog['failed'] ?? 0) > 0) {
+            $error = sprintf(
+                /* translators: %d: number of failed actions */
+                __('%d fehlgeschlagene Queue-Jobs vorhanden.', 'sg-jobs'),
+                $backlog['failed']
+            );
+        }
+
+        return [
+            'supported' => true,
+            'ok' => $error === null,
+            'error' => $error,
+            'backlog' => $backlog,
+        ];
+    }
+
+    /**
+     * @return array{scheduled:bool, overdue:bool, next_run:?int, schedule:?string}
+     */
+    private function inspectPaymentSyncCron(): array
+    {
+        $event = wp_get_scheduled_event('sg_jobs_bexio_payment_sync');
+        if (! $event) {
+            return [
+                'scheduled' => false,
+                'overdue' => false,
+                'next_run' => null,
+                'schedule' => null,
+            ];
+        }
+
+        if (is_array($event)) {
+            $timestamp = (int) ($event['timestamp'] ?? 0);
+            $schedule = $event['schedule'] ?? null;
+        } else {
+            $timestamp = (int) $event->timestamp;
+            $schedule = $event->schedule ?? null;
+        }
+        $now = time();
+        $tolerance = (defined('MINUTE_IN_SECONDS') ? (int) MINUTE_IN_SECONDS : 60) * 5;
+        $overdue = $timestamp + $tolerance < $now;
+
+        return [
+            'scheduled' => true,
+            'overdue' => $overdue,
+            'next_run' => $timestamp,
+            'schedule' => $schedule,
+        ];
     }
 }

@@ -31,6 +31,17 @@ npm run build
 
 Konfigurationen für bexio, CalDAV und JWT werden über die WordPress-Settings oder Umgebungsvariablen vorgenommen. Token oder Passwörter gehören nie ins Repository.
 
+## Health endpoint
+
+Administrators can call `GET /wp-json/sgjobs/v1/health` to verify the installation. The response reports:
+
+- JWT configuration and CalDAV connectivity per team (existing behaviour).
+- Bexio connectivity by running a lightweight authenticated API request.
+- Action Scheduler backlog counts for the `sg-jobs` queue, including failed jobs.
+- Cron status for the `sg_jobs_bexio_payment_sync` event with next run timestamps.
+
+Any failing check sets `ok` to `false` and surfaces translated error messages to highlight the corrective action.
+
 ## Security notes
 
 - Magic link JWTs are signed server-side only and scoped to job or team access.
