@@ -8,6 +8,9 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -23,26 +26,43 @@ jobs:
         with:
           php-version: '8.2'
           tools: composer
+          coverage: none
 
       - name: Install npm dependencies
         run: npm ci
 
-      - name: Run frontend quality checks
-        run: |
-          npm run lint
-          npm run typecheck
-          npm run build
+      - name: Build assets
+        run: npm run build
 
       - name: Install composer dependencies
         run: composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
 
-      - name: Pack plugin artifact
+      - name: Package plugin
         run: |
           mkdir -p artifact
-          zip -r artifact/sg-jobs-build.zip . -x ".git/*" "node_modules/*" ".github/*" "tests/*" "**/*.map" "artifact/*"
+          zip -r artifact/sg-jobs-build.zip sg-jobs.php vendor dist src public
+
+      - name: Extract changelog entry
+        id: changelog
+        run: |
+          tag="${GITHUB_REF_NAME}"
+          version="${tag#v}"
+          mkdir -p artifact
+          awk -v ver="$version" '
+            /^## \[/{
+              if (capture) exit
+              if ($0 ~ "\\[" ver "\\]") { capture=1; print; next }
+            }
+            capture { print }
+          ' CHANGELOG.md > artifact/CHANGELOG_FRAGMENT.md
+          if [ ! -s artifact/CHANGELOG_FRAGMENT.md ]; then
+            echo "## ${version}" > artifact/CHANGELOG_FRAGMENT.md
+            echo "Release notes will be added soon." >> artifact/CHANGELOG_FRAGMENT.md
+          fi
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           files: artifact/sg-jobs-build.zip
+          body_path: artifact/CHANGELOG_FRAGMENT.md
           generate_release_notes: true

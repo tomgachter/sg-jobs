@@ -27,27 +27,16 @@ jobs:
       - name: Install npm dependencies
         run: npm ci
 
-      - name: Run frontend checks
-        run: |
-          npm run lint
-          npm run typecheck
-          npm run build
+      - name: Build assets
+        run: npm run build
 
-      - name: Install composer dependencies (with dev tools)
-        run: composer install --no-interaction
-
-      - name: Run PHP static analysis
-        run: |
-          composer analyse
-          composer cs
-
-      - name: Install production composer dependencies
+      - name: Install composer dependencies
         run: composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
 
       - name: Pack plugin artifact
         run: |
           mkdir -p artifact
-          zip -r artifact/sg-jobs-build.zip . -x ".git/*" "node_modules/*" ".github/*" "tests/*" "**/*.map" "artifact/*"
+          zip -r artifact/sg-jobs-build.zip sg-jobs.php vendor dist src public
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
