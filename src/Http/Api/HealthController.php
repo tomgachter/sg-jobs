@@ -360,13 +360,11 @@ class HealthController
             ];
         }
 
-        if (is_array($event)) {
-            $timestamp = (int) ($event['timestamp'] ?? 0);
-            $schedule = $event['schedule'] ?? null;
-        } else {
-            $timestamp = (int) $event->timestamp;
-            $schedule = $event->schedule ?? null;
-        }
+        /** @var int $timestamp */
+        $timestamp = (int) $event->timestamp;
+
+        $scheduleRaw = $event->schedule ?? null;
+        $schedule = is_string($scheduleRaw) ? $scheduleRaw : null;
         $now = time();
         $tolerance = (defined('MINUTE_IN_SECONDS') ? (int) MINUTE_IN_SECONDS : 60) * 5;
         $overdue = $timestamp + $tolerance < $now;
