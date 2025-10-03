@@ -1,0 +1,43 @@
+name: Build SG Jobs
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main, feature/** ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer
+
+      - name: npm install & build
+        run: |
+          npm ci || npm install
+          npm run build
+
+      - name: composer install
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Pack plugin artifact
+        run: |
+          mkdir -p artifact
+          zip -r artifact/sg-jobs.zip . -x ".git/*" "node_modules/*" ".github/*"
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sg-jobs
+          path: artifact/sg-jobs.zip
