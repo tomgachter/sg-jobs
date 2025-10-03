@@ -6,6 +6,7 @@ namespace SGJobs\Infra\Bexio;
 
 use GuzzleHttp\Exception\GuzzleException;
 use SGJobs\Domain\Entity\Job;
+use Throwable;
 use WP_Error;
 
 class BexioService
@@ -30,7 +31,7 @@ class BexioService
                 'phones' => $this->extractPhones($note),
                 'sales_order_nr' => $note['reference'] ?? null,
             ];
-        } catch (GuzzleException $exception) {
+        } catch (GuzzleException|Throwable $exception) {
             return new WP_Error('sg_jobs_bexio_error', $exception->getMessage());
         }
     }
@@ -49,7 +50,7 @@ class BexioService
                     'unit' => (string) $position['unit_name'],
                 ];
             }, $positions);
-        } catch (GuzzleException $exception) {
+        } catch (GuzzleException|Throwable $exception) {
             return new WP_Error('sg_jobs_bexio_error', $exception->getMessage());
         }
     }
@@ -59,7 +60,18 @@ class BexioService
         try {
             $this->client->post(sprintf('/kb_delivery_notes/%d/comments', $deliveryNoteId), ['content' => $text]);
             return true;
-        } catch (GuzzleException $exception) {
+        } catch (GuzzleException|Throwable $exception) {
+            return new WP_Error('sg_jobs_bexio_error', $exception->getMessage());
+        }
+    }
+
+    public function ping(): bool|WP_Error
+    {
+        try {
+            $this->client->get('/kb_delivery_notes', ['limit' => 1]);
+
+            return true;
+        } catch (GuzzleException|Throwable $exception) {
             return new WP_Error('sg_jobs_bexio_error', $exception->getMessage());
         }
     }
@@ -78,7 +90,7 @@ class BexioService
             }
             $invoice = $invoices[0];
             return isset($invoice['is_paid']) && (bool) $invoice['is_paid'];
-        } catch (GuzzleException $exception) {
+        } catch (GuzzleException|Throwable $exception) {
             return new WP_Error('sg_jobs_bexio_error', $exception->getMessage());
         }
     }

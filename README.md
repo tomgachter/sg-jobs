@@ -52,6 +52,17 @@ Ensure WordPress cron or a system cron triggers `wp cron event run sg_jobs_bexio
 
 Subscribe to each team execution calendar and its blocker calendar in Apple Calendar. Jobs will show the emoji status in the title and the structured notes block in the description.
 
+## Health endpoint
+
+Administrators can call `GET /wp-json/sgjobs/v1/health` to verify the installation. The response reports:
+
+- JWT configuration and CalDAV connectivity per team (existing behaviour).
+- Bexio connectivity by running a lightweight authenticated API request.
+- Action Scheduler backlog counts for the `sg-jobs` queue, including failed jobs.
+- Cron status for the `sg_jobs_bexio_payment_sync` event with next run timestamps.
+
+Any failing check sets `ok` to `false` and surfaces translated error messages to highlight the corrective action.
+
 ## Security notes
 
 - Magic link JWTs are signed server-side only and scoped to job or team access.
