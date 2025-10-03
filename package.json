@@ -9,7 +9,6 @@
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "@types/wordpress__data": "^9.0.0",
     "@types/node": "^20.11.0",
     "@vitejs/plugin-react": "^4.1.0",
     "eslint": "^8.56.0",
