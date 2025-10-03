@@ -22,7 +22,7 @@
     }
   },
   "scripts": {
-    "analyse": "phpstan analyse src",
+    "analyse": "phpstan analyse --memory-limit=1G src",
     "cs": "phpcs --standard=PSR12 src",
     "fix": "phpcbf --standard=PSR12 src"
   },
