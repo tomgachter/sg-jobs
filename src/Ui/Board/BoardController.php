@@ -64,16 +64,20 @@ class BoardController
                 $team['principal'] = $team['caldav_principal'];
             }
 
-            if (! array_key_exists('execution', $team)) {
-                $team['execution'] = null;
+            foreach (['execution', 'blocker'] as $key) {
+                if (! empty($team[$key]) && is_string($team[$key])) {
+                    $team[$key] = rtrim($team[$key], '/') . '/';
+                }
             }
 
-            if (! array_key_exists('principal', $team)) {
-                $team['principal'] = null;
+            if (! empty($team['principal']) && is_string($team['principal'])) {
+                $team['principal'] = rtrim($team['principal'], '/') . '/';
             }
 
-            if (! array_key_exists('blocker', $team)) {
-                $team['blocker'] = null;
+            foreach (['execution', 'principal', 'blocker'] as $key) {
+                if (! array_key_exists($key, $team)) {
+                    $team[$key] = null;
+                }
             }
         }
         unset($team);
