@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 
 type Job = {
@@ -9,7 +9,7 @@ type Job = {
   notes: string;
 };
 
-const JobSheet: React.FC = () => {
+function JobSheet(): JSX.Element {
   const [job, setJob] = useState<Job | null>(null);
   const [comment, setComment] = useState('');
   const [status, setStatus] = useState('');
@@ -41,7 +41,11 @@ const JobSheet: React.FC = () => {
 
   return (
     <div className="jobsheet">
-      <h1>✅ Lieferschein {job.delivery_note_nr}</h1>
+      <h1>
+        ✅ Lieferschein
+        {' '}
+        <span className="delivery-note-number">{job.delivery_note_nr}</span>
+      </h1>
       <h2>{job.customer_name}</h2>
       <div className="phones">
         {job.phones.map((phone) => (
@@ -57,10 +61,12 @@ const JobSheet: React.FC = () => {
       {status === 'done' && <p className="status">Danke! Status aktualisiert.</p>}
     </div>
   );
-};
+}
 
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/wp-content/plugins/sg-jobs/public/sw.js').catch(console.error);
+  navigator.serviceWorker
+    .register('/wp-content/plugins/sg-jobs/public/sw.js')
+    .catch((error) => console.error('Service worker registration failed', error));
 }
 
 const container = document.getElementById('sg-jobs-sheet');

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SGJobs\Infra\Logging;
 
 use Psr\Log\AbstractLogger;
+use Stringable;
 
 class Logger extends AbstractLogger
 {
@@ -19,6 +20,11 @@ class Logger extends AbstractLogger
         return self::$instance;
     }
 
+    /**
+     * @param string $level
+     * @param string|Stringable $message
+     * @param array<string, mixed> $context
+     */
     public function log($level, $message, array $context = []): void
     {
         $entry = sprintf('[SG Jobs][%s] %s %s', strtoupper((string) $level), $message, wp_json_encode($context));

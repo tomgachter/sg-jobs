@@ -109,7 +109,7 @@ class Bootstrap
         }
     }
 
-    private function resolveMigrationClass(string $path): ?string
+    private function resolveMigrationClass(string $path): string
     {
         $file = pathinfo($path, PATHINFO_FILENAME);
         $normalized = str_replace(['_', '-'], ' ', $file);

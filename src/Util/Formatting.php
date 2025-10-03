@@ -43,6 +43,9 @@ class Formatting
         );
     }
 
+    /**
+     * @param array<string, mixed> $row
+     */
     public static function jobFromRow(array $row): Job
     {
         global $wpdb;
@@ -57,9 +60,14 @@ class Formatting
         $phones = new PhoneList($phonesArray);
         $timeRange = new TimeRange($start, $end);
         $address = new Address($row['address_line'] ?? '', '', $row['location_city'], 'CH');
+        $rawPositions = $row['positions'] ?? [];
+        if (! is_array($rawPositions)) {
+            $rawPositions = [];
+        }
+
         $positions = array_map(static function (array $pos): JobPosition {
             return new JobPosition($pos['bexio_position_id'], $pos['article_no'], $pos['title'], $pos['description'], (float) $pos['qty'], $pos['unit'], $pos['work_type'], (int) $pos['sort']);
-        }, $row['positions'] ?? []);
+        }, $rawPositions);
 
         return new Job(
             (int) $row['id'],

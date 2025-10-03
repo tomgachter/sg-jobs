@@ -17,6 +17,9 @@ class PhoneList
         $this->phones = array_values(array_filter(array_map([$this, 'normalise'], $phones)));
     }
 
+    /**
+     * @return list<string>
+     */
     public function toArray(): array
     {
         return $this->phones;

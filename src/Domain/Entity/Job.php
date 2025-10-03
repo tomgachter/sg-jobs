@@ -27,6 +27,7 @@ class Job
         private string $timezone,
         private ?string $caldavEventUid,
         private string $publicUrl,
+        /** @var list<JobPosition> */
         private array $positions,
         private ?string $notes
     ) {
@@ -97,7 +98,9 @@ class Job
         return $this->publicUrl;
     }
 
-    /** @return JobPosition[] */
+    /**
+     * @return list<JobPosition>
+     */
     public function positions(): array
     {
         return $this->positions;

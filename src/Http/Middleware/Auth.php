@@ -11,6 +11,9 @@ use WP_REST_Response;
 
 class Auth
 {
+    /**
+     * @var array<string, mixed>|null
+     */
     private ?array $installerClaims = null;
 
     private JwtService $jwt;
@@ -45,17 +48,23 @@ class Auth
         return true;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function currentInstallerClaims(): array
     {
         return $this->installerClaims ?? [];
     }
 
+    /**
+     * @return array<string, mixed>|WP_Error
+     */
     public function validateInstallerToken(string $token): array|WP_Error
     {
         return $this->jwt->validateToken($token);
     }
 
-    public function toRestError(WP_Error $error)
+    public function toRestError(WP_Error $error): WP_REST_Response
     {
         return new WP_REST_Response([
             'error' => [

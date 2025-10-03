@@ -29,6 +29,19 @@ class JobsService
         $this->jwt = new JwtService();
     }
 
+    /**
+     * @param array{
+     *     delivery_note_nr:string,
+     *     team_id:int,
+     *     starts_at:string,
+     *     ends_at:string,
+     *     timezone?:string,
+     *     phones?:array<int, string>,
+     *     location_city:string,
+     *     notes?:string
+     * } $payload
+     * @return array{job_id:int,public_job_url:string,caldav_event_uid:string}|WP_Error
+     */
     public function createJob(array $payload, int $authorId): array|WP_Error
     {
         global $wpdb;
@@ -72,6 +85,7 @@ class JobsService
         $wpdb->insert($wpdb->prefix . 'sg_jobs', $jobData);
         $jobId = (int) $wpdb->insert_id;
 
+        /** @var array<int, array<string, mixed>> $positions */
         foreach ($positions as $index => $position) {
             $wpdb->insert($wpdb->prefix . 'sg_job_positions', [
                 'job_id' => $jobId,
@@ -113,6 +127,9 @@ class JobsService
         ];
     }
 
+    /**
+     * @param array<string, mixed> $meta
+     */
     public function markStatus(int $jobId, string $status, array $meta = []): bool|WP_Error
     {
         global $wpdb;
@@ -150,6 +167,9 @@ class JobsService
         return $this->markStatus($jobId, 'paid', ['actor' => 'system']);
     }
 
+    /**
+     * @return array<string, mixed>|WP_Error
+     */
     public function getJobById(int $jobId): array|WP_Error
     {
         global $wpdb;
@@ -165,6 +185,9 @@ class JobsService
         return $row;
     }
 
+    /**
+     * @param array<string, mixed> $meta
+     */
     private function logAudit(int $jobId, string $action, array $meta): void
     {
         global $wpdb;

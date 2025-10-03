@@ -8,12 +8,18 @@ use WP_Error;
 
 class TeamsService
 {
+    /**
+     * @return list<array<string, mixed>>
+     */
     public function listTeams(): array
     {
         global $wpdb;
         return $wpdb->get_results('SELECT * FROM ' . $wpdb->prefix . 'sg_teams ORDER BY name ASC', ARRAY_A);
     }
 
+    /**
+     * @return array<string, mixed>|WP_Error
+     */
     public function getTeam(int $teamId): array|WP_Error
     {
         global $wpdb;

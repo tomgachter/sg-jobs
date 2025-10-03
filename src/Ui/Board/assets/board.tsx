@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import FullCalendar from '@fullcalendar/react';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -14,11 +14,11 @@ type JobEvent = {
   status: string;
 };
 
-const BoardApp: React.FC = () => {
+function BoardApp(): JSX.Element {
   const [events, setEvents] = useState<JobEvent[]>([]);
 
   useEffect(() => {
-    fetch('/wp-json/sgjobs/v1/jobs?date=' + dayjs().format('YYYY-MM-DD'))
+    fetch(`/wp-json/sgjobs/v1/jobs?date=${dayjs().format('YYYY-MM-DD')}`)
       .then((res) => res.json())
       .then((data) => setEvents(data.jobs || []))
       .catch((err) => console.error('Failed loading jobs', err));
@@ -39,7 +39,7 @@ const BoardApp: React.FC = () => {
       />
     </div>
   );
-};
+}
 
 const container = document.getElementById('sg-jobs-board');
 if (container) {

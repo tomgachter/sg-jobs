@@ -71,6 +71,9 @@ class JwtService
         $this->expiryDays = ($expiryDays && $expiryDays > 0) ? $expiryDays : 14;
     }
 
+    /**
+     * @param array<string, mixed> $claims
+     */
     public function createToken(array $claims): string
     {
         $payload = array_merge($claims, [
@@ -82,6 +85,9 @@ class JwtService
         return JWT::encode($payload, $this->secret, 'HS256');
     }
 
+    /**
+     * @return array<string, mixed>|WP_Error
+     */
     public function validateToken(string $token): array|WP_Error
     {
         try {
