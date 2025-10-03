@@ -23,6 +23,9 @@ class CalDAVClient
         ]);
     }
 
+    /**
+     * @param array<string, mixed> $options
+     */
     public function request(string $method, string $path, array $options = []): string
     {
         $response = $this->client->request($method, $path, $options);

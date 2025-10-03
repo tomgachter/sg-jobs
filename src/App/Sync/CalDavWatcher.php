@@ -15,6 +15,8 @@ class CalDavWatcher
 
     public function pollForChanges(): void
     {
-        Logger::instance()->info('CalDAV watcher executed', []);
+        Logger::instance()->info('CalDAV watcher executed', [
+            'client' => get_class($this->client),
+        ]);
     }
 }

@@ -18,6 +18,9 @@ class JobPosition
     ) {
     }
 
+    /**
+     * @return array{bexio_position_id:int,article_no:string,title:string,description:string,qty:float,unit:string,work_type:string,sort:int}
+     */
     public function toArray(): array
     {
         return [

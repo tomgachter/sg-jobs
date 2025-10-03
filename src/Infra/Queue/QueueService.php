@@ -6,6 +6,9 @@ namespace SGJobs\Infra\Queue;
 
 class QueueService
 {
+    /**
+     * @param array<string, mixed> $args
+     */
     public function dispatch(string $hook, array $args = [], int $delay = 0): void
     {
         if ($delay > 0) {

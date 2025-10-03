@@ -113,24 +113,34 @@ class SettingsPage
         echo '<thead><tr><th>' . esc_html__('Team name', 'sg-jobs') . '</th><th>' . esc_html__('CalDAV principal', 'sg-jobs') . '</th><th>' . esc_html__('Execution calendar path', 'sg-jobs') . '</th><th>' . esc_html__('Blocker calendar path', 'sg-jobs') . '</th></tr></thead>';
         echo '<tbody>';
         for ($i = 0; $i < $rows; $i++) {
+            /** @var array{name:string,principal:string,execution:string,blocker:string} $team */
             $team = $teams[$i] ?? ['name' => '', 'principal' => '', 'execution' => '', 'blocker' => ''];
             printf(
                 '<tr><td><input type="text" name="sg_jobs_teams[%1$d][name]" value="%2$s" /></td><td><input type="text" name="sg_jobs_teams[%1$d][principal]" value="%3$s" /></td><td><input type="text" name="sg_jobs_teams[%1$d][execution]" value="%4$s" /></td><td><input type="text" name="sg_jobs_teams[%1$d][blocker]" value="%5$s" /></td></tr>',
                 $i,
-                esc_attr($team['name'] ?? ''),
-                esc_attr($team['principal'] ?? ''),
-                esc_attr($team['execution'] ?? ''),
-                esc_attr($team['blocker'] ?? '')
+                esc_attr($team['name']),
+                esc_attr($team['principal']),
+                esc_attr($team['execution']),
+                esc_attr($team['blocker'])
             );
         }
         echo '</tbody></table>';
         echo '<p class="description">' . esc_html__('Füllen Sie mehrere Zeilen aus; eine zusätzliche leere Zeile steht immer zur Verfügung. Leere Zeilen werden ignoriert.', 'sg-jobs') . '</p>';
     }
 
+    /**
+     * @param mixed $input
+     * @return array<string, mixed>
+     */
     public function sanitizeArray(mixed $input): array
     {
         if (! is_array($input)) {
-            return [];
+            add_settings_error('sg_jobs_jwt', 'invalid_format', __('Ungültige JWT-Konfiguration.', 'sg-jobs'));
+
+            return [
+                'secret' => '',
+                'expiry_days' => 14,
+            ];
         }
 
         foreach ($input as $key => $value) {
@@ -140,10 +150,19 @@ class SettingsPage
         return $input;
     }
 
+    /**
+     * @param mixed $input
+     * @return array{secret:string,expiry_days:int}
+     */
     public function sanitizeJwt(mixed $input): array
     {
         if (! is_array($input)) {
-            return [];
+            add_settings_error('sg_jobs_jwt', 'invalid_format', __('Ungültige JWT-Konfiguration.', 'sg-jobs'));
+
+            return [
+                'secret' => '',
+                'expiry_days' => 14,
+            ];
         }
 
         $secret = sanitize_text_field((string) ($input['secret'] ?? ''));
@@ -165,6 +184,10 @@ class SettingsPage
         ];
     }
 
+    /**
+     * @param mixed $input
+     * @return list<array{name:string,principal:string,execution:string,blocker:string}>
+     */
     public function sanitizeTeams(mixed $input): array
     {
         if (! is_array($input)) {
@@ -216,7 +239,7 @@ class SettingsPage
     }
 
     /**
-     * @return array<int, array{name:string,principal:string,execution:string,blocker:string}>
+     * @return list<array{name:string,principal:string,execution:string,blocker:string}>
      */
     private function getNormalizedTeams(): array
     {

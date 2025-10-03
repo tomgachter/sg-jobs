@@ -6,7 +6,9 @@ namespace SGJobs\Http\Api;
 
 use SGJobs\App\JobsService;
 use SGJobs\Http\Middleware\Auth;
+use WP_Error;
 use WP_REST_Request;
+use WP_REST_Response;
 use WP_REST_Server;
 
 class JobsController
@@ -56,7 +58,11 @@ class JobsController
         });
     }
 
-    public function listJobs(\WP_REST_Request $request)
+    /**
+     * @param WP_REST_Request<array<string, mixed>> $request
+     * @return array{jobs:array<array-key, mixed>, blockers:array<array-key, mixed>}
+     */
+    public function listJobs(WP_REST_Request $request): array
     {
         // Placeholder board data until board service is implemented
         return [
@@ -65,9 +71,16 @@ class JobsController
         ];
     }
 
-    public function createJob(WP_REST_Request $request)
+    /**
+     * @param WP_REST_Request<array<string, mixed>> $request
+     * @return array{job_id:int,public_job_url:string,caldav_event_uid:string}|WP_REST_Response
+     */
+    public function createJob(WP_REST_Request $request): array|WP_REST_Response
     {
         $payload = $request->get_json_params();
+        if (! is_array($payload)) {
+            return $this->auth->toRestError(new WP_Error('sg_jobs_invalid_payload', __('Ungültige Anfragedaten.', 'sg-jobs')));
+        }
         $result = $this->jobs->createJob($payload, get_current_user_id());
         if ($result instanceof \WP_Error) {
             return $this->auth->toRestError($result);
@@ -76,7 +89,11 @@ class JobsController
         return $result;
     }
 
-    public function getJob(WP_REST_Request $request)
+    /**
+     * @param WP_REST_Request<array<string, mixed>> $request
+     * @return array<string, mixed>|WP_REST_Response
+     */
+    public function getJob(WP_REST_Request $request): array|WP_REST_Response
     {
         $jobId = (int) $request['id'];
         $result = $this->jobs->getJobById($jobId);
@@ -87,10 +104,18 @@ class JobsController
         return $result;
     }
 
-    public function markDone(WP_REST_Request $request)
+    /**
+     * @param WP_REST_Request<array<string, mixed>> $request
+     * @return array{status:string}|WP_REST_Response
+     */
+    public function markDone(WP_REST_Request $request): array|WP_REST_Response
     {
         $jobId = (int) $request['id'];
-        $comment = $request->get_json_params()['comment'] ?? '';
+        $payload = $request->get_json_params();
+        if (! is_array($payload)) {
+            return $this->auth->toRestError(new WP_Error('sg_jobs_invalid_payload', __('Ungültige Anfragedaten.', 'sg-jobs')));
+        }
+        $comment = (string) ($payload['comment'] ?? '');
         $tokenClaims = $this->auth->currentInstallerClaims();
         $result = $this->jobs->markDone($jobId, $comment, $tokenClaims['sub'] ?? 'installer');
         if ($result instanceof \WP_Error) {
@@ -100,7 +125,11 @@ class JobsController
         return ['status' => 'done'];
     }
 
-    public function markBillable(WP_REST_Request $request)
+    /**
+     * @param WP_REST_Request<array<string, mixed>> $request
+     * @return array{status:string}|WP_REST_Response
+     */
+    public function markBillable(WP_REST_Request $request): array|WP_REST_Response
     {
         $jobId = (int) $request['id'];
         $result = $this->jobs->markBillable($jobId, get_current_user_id());

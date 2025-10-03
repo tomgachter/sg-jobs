@@ -27,6 +27,9 @@ class HealthController
         return current_user_can('manage_options');
     }
 
+    /**
+     * @param WP_REST_Request<array<string, mixed>> $request
+     */
     public function check(WP_REST_Request $request): WP_REST_Response
     {
         $errors = [];
@@ -143,7 +146,7 @@ class HealthController
     }
 
     /**
-     * @return array<int, array{name:string, principal:string, execution:string, blocker:string}>
+     * @return list<array{name:string, principal:string, execution:string, blocker:string}>
      */
     private function loadTeams(): array
     {

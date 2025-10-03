@@ -6,7 +6,9 @@ namespace SGJobs\Http\Api;
 
 use SGJobs\App\JobsService;
 use SGJobs\Http\Middleware\Auth;
+use WP_Error;
 use WP_REST_Request;
+use WP_REST_Response;
 use WP_REST_Server;
 
 class MagicLinkController
@@ -38,7 +40,11 @@ class MagicLinkController
         });
     }
 
-    public function listJobs(WP_REST_Request $request)
+    /**
+     * @param WP_REST_Request<array<string, mixed>> $request
+     * @return array{jobs:array<array-key, mixed>}
+     */
+    public function listJobs(WP_REST_Request $request): array
     {
         // Simplified response placeholder
         return [
@@ -46,19 +52,23 @@ class MagicLinkController
         ];
     }
 
-    public function jobByToken(WP_REST_Request $request)
+    /**
+     * @param WP_REST_Request<array<string, mixed>> $request
+     * @return array<string, mixed>|WP_REST_Response
+     */
+    public function jobByToken(WP_REST_Request $request): array|WP_REST_Response
     {
         $token = $request['token'];
         $claims = $this->auth->validateInstallerToken($token);
-        if ($claims instanceof \WP_Error) {
+        if ($claims instanceof WP_Error) {
             return $this->auth->toRestError($claims);
         }
         $jobId = (int) ($claims['job_id'] ?? 0);
         if (! $jobId) {
-            return $this->auth->toRestError(new \WP_Error('sg_jobs_invalid_token', __('Token enthält keine Job-ID.', 'sg-jobs')));
+            return $this->auth->toRestError(new WP_Error('sg_jobs_invalid_token', __('Token enthält keine Job-ID.', 'sg-jobs')));
         }
         $job = $this->jobs->getJobById($jobId);
-        if ($job instanceof \WP_Error) {
+        if ($job instanceof WP_Error) {
             return $this->auth->toRestError($job);
         }
         return $job;

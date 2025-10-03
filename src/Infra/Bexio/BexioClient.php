@@ -33,6 +33,8 @@ class BexioClient
     }
 
     /**
+     * @param array<string, mixed> $query
+     * @return array<string, mixed>
      * @throws GuzzleException
      */
     public function get(string $path, array $query = []): array
@@ -60,6 +62,8 @@ class BexioClient
     }
 
     /**
+     * @param array<string, mixed> $payload
+     * @return array<string, mixed>
      * @throws GuzzleException
      */
     public function post(string $path, array $payload): array
