@@ -9,7 +9,6 @@
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "@types/wordpress__block-editor": "^12.0.0",
     "@types/wordpress__data": "^9.0.0",
     "@types/node": "^20.11.0",
     "@vitejs/plugin-react": "^4.1.0",
