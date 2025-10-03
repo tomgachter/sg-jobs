@@ -30,6 +30,7 @@ jobs:
 
       - name: Install composer deps
         run: composer install --no-interaction --prefer-dist
+        run: composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
 
       - name: Pack plugin artifact
         run: |
