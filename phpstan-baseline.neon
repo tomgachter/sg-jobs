@@ -1,0 +1,286 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Method SGJobs\\\\Admin\\\\SettingsPage\\:\\:sanitizeArray\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Admin/SettingsPage.php
+
+		-
+			message: "#^Method SGJobs\\\\Admin\\\\SettingsPage\\:\\:sanitizeJwt\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Admin/SettingsPage.php
+
+		-
+			message: "#^Method SGJobs\\\\Admin\\\\SettingsPage\\:\\:sanitizeTeams\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Admin/SettingsPage.php
+
+		-
+			message: "#^Offset 'blocker' on array\\{name\\: string, principal\\: string, execution\\: string, blocker\\: string\\} on left side of \\?\\? always exists and is not nullable\\.$#"
+			count: 1
+			path: src/Admin/SettingsPage.php
+
+		-
+			message: "#^Offset 'execution' on array\\{name\\: string, principal\\: string, execution\\: string, blocker\\: string\\} on left side of \\?\\? always exists and is not nullable\\.$#"
+			count: 1
+			path: src/Admin/SettingsPage.php
+
+		-
+			message: "#^Offset 'name' on array\\{name\\: string, principal\\: string, execution\\: string, blocker\\: string\\} on left side of \\?\\? always exists and is not nullable\\.$#"
+			count: 1
+			path: src/Admin/SettingsPage.php
+
+		-
+			message: "#^Offset 'principal' on array\\{name\\: string, principal\\: string, execution\\: string, blocker\\: string\\} on left side of \\?\\? always exists and is not nullable\\.$#"
+			count: 1
+			path: src/Admin/SettingsPage.php
+
+		-
+			message: "#^Method SGJobs\\\\App\\\\JobsService\\:\\:createJob\\(\\) has parameter \\$payload with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/App/JobsService.php
+
+		-
+			message: "#^Method SGJobs\\\\App\\\\JobsService\\:\\:createJob\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/App/JobsService.php
+
+		-
+			message: "#^Method SGJobs\\\\App\\\\JobsService\\:\\:getJobById\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/App/JobsService.php
+
+		-
+			message: "#^Method SGJobs\\\\App\\\\JobsService\\:\\:logAudit\\(\\) has parameter \\$meta with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/App/JobsService.php
+
+		-
+			message: "#^Method SGJobs\\\\App\\\\JobsService\\:\\:markStatus\\(\\) has parameter \\$meta with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/App/JobsService.php
+
+		-
+			message: "#^Property SGJobs\\\\App\\\\Sync\\\\CalDavWatcher\\:\\:\\$client is never read, only written\\.$#"
+			count: 1
+			path: src/App/Sync/CalDavWatcher.php
+
+		-
+			message: "#^Method SGJobs\\\\App\\\\TeamsService\\:\\:getTeam\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/App/TeamsService.php
+
+		-
+			message: "#^Method SGJobs\\\\App\\\\TeamsService\\:\\:listTeams\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/App/TeamsService.php
+
+		-
+			message: "#^Call to an undefined method object\\:\\:up\\(\\)\\.$#"
+			count: 1
+			path: src/Bootstrap.php
+
+		-
+			message: "#^Method SGJobs\\\\Bootstrap\\:\\:resolveMigrationClass\\(\\) never returns null so it can be removed from the return type\\.$#"
+			count: 1
+			path: src/Bootstrap.php
+
+		-
+			message: "#^Method SGJobs\\\\Domain\\\\Entity\\\\Job\\:\\:__construct\\(\\) has parameter \\$positions with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Domain/Entity/Job.php
+
+		-
+			message: "#^Method SGJobs\\\\Domain\\\\Entity\\\\JobPosition\\:\\:toArray\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Domain/Entity/JobPosition.php
+
+		-
+			message: "#^Method SGJobs\\\\Domain\\\\ValueObjects\\\\PhoneList\\:\\:toArray\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Domain/ValueObjects/PhoneList.php
+
+		-
+			message: "#^Method SGJobs\\\\Http\\\\Api\\\\HealthController\\:\\:check\\(\\) has parameter \\$request with generic class WP_REST_Request but does not specify its types\\: T$#"
+			count: 1
+			path: src/Http/Api/HealthController.php
+
+		-
+			message: "#^Method SGJobs\\\\Http\\\\Api\\\\JobsController\\:\\:createJob\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: src/Http/Api/JobsController.php
+
+		-
+			message: "#^Method SGJobs\\\\Http\\\\Api\\\\JobsController\\:\\:createJob\\(\\) has parameter \\$request with generic class WP_REST_Request but does not specify its types\\: T$#"
+			count: 1
+			path: src/Http/Api/JobsController.php
+
+		-
+			message: "#^Method SGJobs\\\\Http\\\\Api\\\\JobsController\\:\\:getJob\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: src/Http/Api/JobsController.php
+
+		-
+			message: "#^Method SGJobs\\\\Http\\\\Api\\\\JobsController\\:\\:getJob\\(\\) has parameter \\$request with generic class WP_REST_Request but does not specify its types\\: T$#"
+			count: 1
+			path: src/Http/Api/JobsController.php
+
+		-
+			message: "#^Method SGJobs\\\\Http\\\\Api\\\\JobsController\\:\\:listJobs\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: src/Http/Api/JobsController.php
+
+		-
+			message: "#^Method SGJobs\\\\Http\\\\Api\\\\JobsController\\:\\:listJobs\\(\\) has parameter \\$request with generic class WP_REST_Request but does not specify its types\\: T$#"
+			count: 1
+			path: src/Http/Api/JobsController.php
+
+		-
+			message: "#^Method SGJobs\\\\Http\\\\Api\\\\JobsController\\:\\:markBillable\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: src/Http/Api/JobsController.php
+
+		-
+			message: "#^Method SGJobs\\\\Http\\\\Api\\\\JobsController\\:\\:markBillable\\(\\) has parameter \\$request with generic class WP_REST_Request but does not specify its types\\: T$#"
+			count: 1
+			path: src/Http/Api/JobsController.php
+
+		-
+			message: "#^Method SGJobs\\\\Http\\\\Api\\\\JobsController\\:\\:markDone\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: src/Http/Api/JobsController.php
+
+		-
+			message: "#^Method SGJobs\\\\Http\\\\Api\\\\JobsController\\:\\:markDone\\(\\) has parameter \\$request with generic class WP_REST_Request but does not specify its types\\: T$#"
+			count: 1
+			path: src/Http/Api/JobsController.php
+
+		-
+			message: "#^Method SGJobs\\\\Http\\\\Api\\\\MagicLinkController\\:\\:jobByToken\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: src/Http/Api/MagicLinkController.php
+
+		-
+			message: "#^Method SGJobs\\\\Http\\\\Api\\\\MagicLinkController\\:\\:jobByToken\\(\\) has parameter \\$request with generic class WP_REST_Request but does not specify its types\\: T$#"
+			count: 1
+			path: src/Http/Api/MagicLinkController.php
+
+		-
+			message: "#^Method SGJobs\\\\Http\\\\Api\\\\MagicLinkController\\:\\:listJobs\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: src/Http/Api/MagicLinkController.php
+
+		-
+			message: "#^Method SGJobs\\\\Http\\\\Api\\\\MagicLinkController\\:\\:listJobs\\(\\) has parameter \\$request with generic class WP_REST_Request but does not specify its types\\: T$#"
+			count: 1
+			path: src/Http/Api/MagicLinkController.php
+
+		-
+			message: "#^Method SGJobs\\\\Http\\\\Middleware\\\\Auth\\:\\:currentInstallerClaims\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Http/Middleware/Auth.php
+
+		-
+			message: "#^Method SGJobs\\\\Http\\\\Middleware\\\\Auth\\:\\:toRestError\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: src/Http/Middleware/Auth.php
+
+		-
+			message: "#^Method SGJobs\\\\Http\\\\Middleware\\\\Auth\\:\\:validateInstallerToken\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Http/Middleware/Auth.php
+
+		-
+			message: "#^Property SGJobs\\\\Http\\\\Middleware\\\\Auth\\:\\:\\$installerClaims type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Http/Middleware/Auth.php
+
+		-
+			message: "#^Method SGJobs\\\\Infra\\\\Bexio\\\\BexioClient\\:\\:get\\(\\) has parameter \\$query with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Infra/Bexio/BexioClient.php
+
+		-
+			message: "#^Method SGJobs\\\\Infra\\\\Bexio\\\\BexioClient\\:\\:get\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Infra/Bexio/BexioClient.php
+
+		-
+			message: "#^Method SGJobs\\\\Infra\\\\Bexio\\\\BexioClient\\:\\:post\\(\\) has parameter \\$payload with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Infra/Bexio/BexioClient.php
+
+		-
+			message: "#^Method SGJobs\\\\Infra\\\\Bexio\\\\BexioClient\\:\\:post\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Infra/Bexio/BexioClient.php
+
+		-
+			message: "#^Method SGJobs\\\\Infra\\\\Bexio\\\\BexioService\\:\\:extractPhones\\(\\) has parameter \\$note with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Infra/Bexio/BexioService.php
+
+		-
+			message: "#^Method SGJobs\\\\Infra\\\\Bexio\\\\BexioService\\:\\:extractPhones\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Infra/Bexio/BexioService.php
+
+		-
+			message: "#^Method SGJobs\\\\Infra\\\\Bexio\\\\BexioService\\:\\:getDeliveryNoteByNumber\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Infra/Bexio/BexioService.php
+
+		-
+			message: "#^Method SGJobs\\\\Infra\\\\Bexio\\\\BexioService\\:\\:getDeliveryNotePositions\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Infra/Bexio/BexioService.php
+
+		-
+			message: "#^Method SGJobs\\\\Infra\\\\CalDAV\\\\CalDAVClient\\:\\:request\\(\\) has parameter \\$options with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Infra/CalDAV/CalDAVClient.php
+
+		-
+			message: "#^Method SGJobs\\\\Infra\\\\Logging\\\\Logger\\:\\:log\\(\\) has parameter \\$message with no type specified\\.$#"
+			count: 1
+			path: src/Infra/Logging/Logger.php
+
+		-
+			message: "#^Function as_enqueue_async_action not found\\.$#"
+			count: 1
+			path: src/Infra/Queue/QueueService.php
+
+		-
+			message: "#^Function as_schedule_single_action not found\\.$#"
+			count: 1
+			path: src/Infra/Queue/QueueService.php
+
+		-
+			message: "#^Method SGJobs\\\\Infra\\\\Queue\\\\QueueService\\:\\:dispatch\\(\\) has parameter \\$args with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Infra/Queue/QueueService.php
+
+		-
+			message: "#^Method SGJobs\\\\Infra\\\\Security\\\\JwtService\\:\\:createToken\\(\\) has parameter \\$claims with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Infra/Security/JwtService.php
+
+		-
+			message: "#^Method SGJobs\\\\Infra\\\\Security\\\\JwtService\\:\\:validateToken\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Infra/Security/JwtService.php
+
+		-
+			message: "#^Constant SGJOBS_PLUGIN_FILE not found\\.$#"
+			count: 2
+			path: src/Ui/Board/BoardController.php
+
+		-
+			message: "#^Constant SGJOBS_PLUGIN_FILE not found\\.$#"
+			count: 3
+			path: src/Ui/JobSheet/JobSheetController.php
+
+		-
+			message: "#^Method SGJobs\\\\Util\\\\Formatting\\:\\:jobFromRow\\(\\) has parameter \\$row with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Util/Formatting.php

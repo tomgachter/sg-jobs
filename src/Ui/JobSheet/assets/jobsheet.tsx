@@ -41,7 +41,11 @@ const JobSheet: React.FC = () => {
 
   return (
     <div className="jobsheet">
-      <h1>✅ Lieferschein {job.delivery_note_nr}</h1>
+      <h1>
+        ✅ Lieferschein
+        {' '}
+        <span className="jobsheet-number">{job.delivery_note_nr}</span>
+      </h1>
       <h2>{job.customer_name}</h2>
       <div className="phones">
         {job.phones.map((phone) => (
