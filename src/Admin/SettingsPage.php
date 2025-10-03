@@ -27,7 +27,7 @@ class SettingsPage
     {
         register_setting('sg_jobs', 'sg_jobs_bexio', ['sanitize_callback' => [$this, 'sanitizeArray']]);
         register_setting('sg_jobs', 'sg_jobs_caldav', ['sanitize_callback' => [$this, 'sanitizeArray']]);
-        register_setting('sg_jobs', 'sg_jobs_jwt', ['sanitize_callback' => [$this, 'sanitizeArray']]);
+        register_setting('sg_jobs', 'sg_jobs_jwt', ['sanitize_callback' => [$this, 'sanitizeJwt']]);
         register_setting('sg_jobs', 'sg_jobs_teams', ['sanitize_callback' => [$this, 'sanitizeTeams']]);
 
         add_settings_section('sg_jobs_bexio_section', __('bexio', 'sg-jobs'), function (): void {
@@ -86,6 +86,10 @@ class SettingsPage
 
         add_settings_section('sg_jobs_teams_section', __('Teams', 'sg-jobs'), function (): void {
             echo '<p>' . esc_html__('Define execution and blocker calendars for each team.', 'sg-jobs') . '</p>';
+            echo '<p>' . wp_kses(
+                __('Verwenden Sie bei Service-Usern (z. B. <code>caldav-sync</code>) die gemounteten Pfade unter <code>/remote.php/dav/calendars/caldav-sync/…</code> und nicht die Owner-Pfade wie <code>/calendars/imhoff/…</code>. Nextcloud blendet die korrekten Pfade im Teilen-Dialog ein.', 'sg-jobs'),
+                ['code' => []]
+            ) . '</p>';
         }, 'sg-jobs');
 
         add_settings_field('sg_jobs_teams_table', __('Teams configuration', 'sg-jobs'), [$this, 'renderTeamsTable'], 'sg-jobs', 'sg_jobs_teams_section');
@@ -103,27 +107,32 @@ class SettingsPage
 
     public function renderTeamsTable(): void
     {
-        $teams = get_option('sg_jobs_teams', []);
+        $teams = $this->getNormalizedTeams();
+        $rows = max(1, count($teams)) + 1;
         echo '<table class="widefat">';
         echo '<thead><tr><th>' . esc_html__('Team name', 'sg-jobs') . '</th><th>' . esc_html__('CalDAV principal', 'sg-jobs') . '</th><th>' . esc_html__('Execution calendar path', 'sg-jobs') . '</th><th>' . esc_html__('Blocker calendar path', 'sg-jobs') . '</th></tr></thead>';
         echo '<tbody>';
-        for ($i = 0; $i < max(1, count($teams)); $i++) {
-            $team = $teams[$i] ?? [];
+        for ($i = 0; $i < $rows; $i++) {
+            $team = $teams[$i] ?? ['name' => '', 'principal' => '', 'execution' => '', 'blocker' => ''];
             printf(
-                '<tr><td><input type="text" name="sg_jobs_teams[%1$d][name]" value="%2$s" /></td><td><input type="text" name="sg_jobs_teams[%1$d][principal]" value="%3$s" /></td><td><input type="text" name="sg_jobs_teams[%1$d][calendar]" value="%4$s" /></td><td><input type="text" name="sg_jobs_teams[%1$d][blocker]" value="%5$s" /></td></tr>',
+                '<tr><td><input type="text" name="sg_jobs_teams[%1$d][name]" value="%2$s" /></td><td><input type="text" name="sg_jobs_teams[%1$d][principal]" value="%3$s" /></td><td><input type="text" name="sg_jobs_teams[%1$d][execution]" value="%4$s" /></td><td><input type="text" name="sg_jobs_teams[%1$d][blocker]" value="%5$s" /></td></tr>',
                 $i,
                 esc_attr($team['name'] ?? ''),
                 esc_attr($team['principal'] ?? ''),
-                esc_attr($team['calendar'] ?? ''),
+                esc_attr($team['execution'] ?? ''),
                 esc_attr($team['blocker'] ?? '')
             );
         }
         echo '</tbody></table>';
-        echo '<p class="description">' . esc_html__('Leave blank rows empty to remove teams. CalDAV paths must be full collection URLs.', 'sg-jobs') . '</p>';
+        echo '<p class="description">' . esc_html__('Füllen Sie mehrere Zeilen aus; eine zusätzliche leere Zeile steht immer zur Verfügung. Leere Zeilen werden ignoriert.', 'sg-jobs') . '</p>';
     }
 
-    public function sanitizeArray(array $input): array
+    public function sanitizeArray(mixed $input): array
     {
+        if (! is_array($input)) {
+            return [];
+        }
+
         foreach ($input as $key => $value) {
             $input[$key] = is_string($value) ? sanitize_text_field($value) : $value;
         }
@@ -131,21 +140,108 @@ class SettingsPage
         return $input;
     }
 
-    public function sanitizeTeams(array $input): array
+    public function sanitizeJwt(mixed $input): array
     {
+        if (! is_array($input)) {
+            return [];
+        }
+
+        $secret = sanitize_text_field((string) ($input['secret'] ?? ''));
+        $expiry = (int) ($input['expiry_days'] ?? 14);
+        if ($secret === '') {
+            add_settings_error('sg_jobs_jwt', 'missing_secret', __('Das JWT-Secret darf nicht leer sein.', 'sg-jobs'));
+        }
+        if ($expiry <= 0) {
+            $expiry = 14;
+            add_settings_error('sg_jobs_jwt', 'invalid_expiry', __('Expiry days muss größer als 0 sein.', 'sg-jobs'));
+        }
+
+        update_option('sg_jobs_jwt_secret', $secret, false);
+        update_option('sg_jobs_jwt_expire_days', $expiry, false);
+
+        return [
+            'secret' => $secret,
+            'expiry_days' => $expiry,
+        ];
+    }
+
+    public function sanitizeTeams(mixed $input): array
+    {
+        if (! is_array($input)) {
+            add_settings_error('sg_jobs_teams', 'invalid_format', __('Ungültiges Team-Format.', 'sg-jobs'));
+
+            return [];
+        }
+
         $teams = [];
         foreach ($input as $team) {
-            if (empty($team['name']) || empty($team['principal']) || empty($team['calendar'])) {
+            if (! is_array($team)) {
                 continue;
             }
+
+            $name = sanitize_text_field((string) ($team['name'] ?? ''));
+            $principal = sanitize_text_field((string) ($team['principal'] ?? ($team['caldav_principal'] ?? '')));
+            $execution = sanitize_text_field((string) ($team['execution'] ?? ($team['execution_path'] ?? ($team['calendar'] ?? ($team['exec'] ?? '')))));
+            $blocker = sanitize_text_field((string) ($team['blocker'] ?? ($team['blocker_path'] ?? '')));
+
+            if ($name === '' && $principal === '' && $execution === '' && $blocker === '') {
+                continue;
+            }
+
+            if ($name === '' || $principal === '' || $execution === '') {
+                add_settings_error('sg_jobs_teams', 'missing_fields', __('Team-Zeilen benötigen Name, Principal und Ausführungspfad.', 'sg-jobs'));
+
+                continue;
+            }
+
             $teams[] = [
-                'name' => sanitize_text_field($team['name']),
-                'principal' => sanitize_text_field($team['principal']),
-                'calendar' => esc_url_raw($team['calendar']),
-                'blocker' => esc_url_raw($team['blocker'] ?? ''),
+                'name' => $name,
+                'principal' => $principal,
+                'execution' => $execution,
+                'blocker' => $blocker,
             ];
         }
 
+        $count = count($teams);
+        if ($count > 0) {
+            add_settings_error(
+                'sg_jobs_teams',
+                'teams_saved',
+                sprintf(_n('%d Team gespeichert.', '%d Teams gespeichert.', $count, 'sg-jobs'), $count),
+                'updated'
+            );
+        }
+
         return $teams;
+    }
+
+    /**
+     * @return array<int, array{name:string,principal:string,execution:string,blocker:string}>
+     */
+    private function getNormalizedTeams(): array
+    {
+        $teams = get_option('sg_jobs_teams', []);
+        if (is_string($teams)) {
+            $decoded = json_decode($teams, true);
+            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                $teams = $decoded;
+            }
+        }
+
+        if (! is_array($teams)) {
+            return [];
+        }
+
+        $normalized = [];
+        foreach ($teams as $team) {
+            $normalized[] = [
+                'name' => isset($team['name']) ? (string) $team['name'] : '',
+                'principal' => isset($team['principal']) ? (string) $team['principal'] : (isset($team['caldav_principal']) ? (string) $team['caldav_principal'] : ''),
+                'execution' => isset($team['execution']) ? (string) $team['execution'] : (isset($team['execution_path']) ? (string) $team['execution_path'] : (isset($team['calendar']) ? (string) $team['calendar'] : (isset($team['exec']) ? (string) $team['exec'] : ''))),
+                'blocker' => isset($team['blocker']) ? (string) $team['blocker'] : (isset($team['blocker_path']) ? (string) $team['blocker_path'] : ''),
+            ];
+        }
+
+        return $normalized;
     }
 }

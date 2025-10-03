@@ -34,7 +34,7 @@ Navigate to **Settings → SG Jobs** and enter:
 
 - bexio base URL and API token.
 - CalDAV base URL, username and password for the service account.
-- Team definitions with CalDAV principal, execution calendar path and blocker calendar path.
+- Team definitions with CalDAV principal, execution calendar path and blocker calendar path. Verwenden Sie bei Service-Accounts wie `caldav-sync` die gemounteten Freigaben unter `/remote.php/dav/calendars/caldav-sync/...` anstatt der ursprünglichen Owner-Pfade.
 - JWT secret (32+ chars) and expiry days for magic links.
 
 ### 5. Place shortcodes
@@ -78,6 +78,21 @@ Mockups illustrating the primary workflows are available in [`docs/mockups`](doc
 - Public online booking requests with calendar availability validation.
 - File uploads and customer signatures via Nextcloud signed URLs.
 - Optional CalDAV hard-lock plugin to prevent out-of-window edits.
+
+## Service user calendars
+
+In vielen Installationen greift ein dedizierter Service-User (z. B. `caldav-sync`) auf die Kalender zu. Nextcloud mountet freigegebene Kalender dieses Users unter `/remote.php/dav/calendars/<service-user>/…`. Diese Pfade müssen sowohl für den Ausführungs- als auch für den Blocker-Kalender verwendet werden.
+
+Beispielkonfiguration für ein Team **Montage** mit Service-User:
+
+```
+Name: Montage
+Principal: https://cloud.example.com/remote.php/dav/principals/users/caldav-sync/
+Execution: remote.php/dav/calendars/caldav-sync/montage/
+Blocker: remote.php/dav/calendars/caldav-sync/montage-blocker/
+```
+
+Der Principal verweist auf den Service-User, die Kalenderpfade verwenden die gemounteten Freigaben. Dadurch funktionieren auch Zugriffe über CalDAV-Clients und Cronjobs ohne interaktive Anmeldung.
 
 ## License
 

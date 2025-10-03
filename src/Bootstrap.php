@@ -7,6 +7,7 @@ namespace SGJobs;
 use SGJobs\Admin\SettingsPage;
 use SGJobs\App\JobsService;
 use SGJobs\App\Sync\BexioPaymentSync;
+use SGJobs\Http\Api\HealthController;
 use SGJobs\Http\Api\JobsController;
 use SGJobs\Http\Api\MagicLinkController;
 use SGJobs\Ui\Board\BoardController;
@@ -48,6 +49,7 @@ class Bootstrap
         $this->settingsPage->register();
         (new JobsController())->registerRoutes();
         (new MagicLinkController())->registerRoutes();
+        (new HealthController())->registerRoutes();
         (new BoardController())->register();
         (new JobSheetController())->register();
 
@@ -84,6 +86,12 @@ class Bootstrap
         if ($role && ! $role->has_cap('sgjobs_manage')) {
             $role->add_cap('sgjobs_manage');
         }
+
+        $this->migrateTeamsOption();
+        $this->migrateJwtOption();
+
+        (new JobSheetController())->registerRewrites();
+        flush_rewrite_rules(false);
     }
 
     public function onDeactivate(): void
@@ -108,5 +116,35 @@ class Bootstrap
         $class = 'SGJobs\\Infra\\DB\\Migrations\\Migration' . str_replace(' ', '', ucwords($normalized));
 
         return $class;
+    }
+
+    private function migrateTeamsOption(): void
+    {
+        $value = get_option('sg_jobs_teams');
+        if (is_string($value)) {
+            $decoded = json_decode($value, true);
+            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                update_option('sg_jobs_teams', $decoded, false);
+            }
+        }
+    }
+
+    private function migrateJwtOption(): void
+    {
+        $options = get_option('sg_jobs_jwt', []);
+        if (! is_array($options)) {
+            return;
+        }
+
+        if (isset($options['secret'])) {
+            update_option('sg_jobs_jwt_secret', (string) $options['secret'], false);
+        }
+
+        if (isset($options['expiry_days'])) {
+            $expiry = (int) $options['expiry_days'];
+            if ($expiry > 0) {
+                update_option('sg_jobs_jwt_expire_days', $expiry, false);
+            }
+        }
     }
 }

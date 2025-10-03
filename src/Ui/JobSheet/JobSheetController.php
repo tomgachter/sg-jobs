@@ -9,12 +9,19 @@ class JobSheetController
     public function register(): void
     {
         add_shortcode('sg_jobs_mine', [$this, 'renderList']);
-        add_rewrite_rule('jobs/([^/]+)/?$', 'index.php?sg_jobs_token=$matches[1]', 'top');
-        add_filter('query_vars', function (array $vars): array {
-            $vars[] = 'sg_jobs_token';
+        add_action('init', [$this, 'registerRewrites']);
+        add_filter('query_vars', static function (array $vars): array {
+            $vars[] = 'sgjobs_job_token';
+
             return $vars;
         });
         add_action('template_redirect', [$this, 'renderJob']);
+    }
+
+    public function registerRewrites(): void
+    {
+        add_rewrite_tag('%sgjobs_job_token%', '([^&]+)');
+        add_rewrite_rule('jobs/([^/]+)/?$', 'index.php?sgjobs_job_token=$matches[1]', 'top');
     }
 
     public function renderList(): string
@@ -26,7 +33,7 @@ class JobSheetController
 
     public function renderJob(): void
     {
-        $token = get_query_var('sg_jobs_token');
+        $token = get_query_var('sgjobs_job_token');
         if (! $token) {
             return;
         }

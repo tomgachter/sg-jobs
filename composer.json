@@ -23,5 +23,10 @@
     "analyse": "phpstan analyse src",
     "cs": "phpcs --standard=PSR12 src",
     "fix": "phpcbf --standard=PSR12 src"
+  },
+  "config": {
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    }
   }
 }
