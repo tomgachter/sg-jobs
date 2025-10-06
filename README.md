@@ -23,49 +23,16 @@ SG Jobs bridges bexio delivery notes with a scheduling cockpit and mobile job ex
 
 ## Deployment package
 
-WordPress must see `vendor/autoload.php` inside the plugin directory. A plain GitHub ZIP does not contain Composer dependencies, so you need to build a release package first. Every push to `main` produces a ready-to-install archive via the **Build release package** GitHub workflow, and you can also build it yourself when needed.
-
-### Option A: Download the automated package
-
-1. Open [GitHub → Actions → Build release package](https://github.com/sg-on-wordpress/sg-jobs/actions/workflows/release-package.yml).
-2. Pick the latest successful run (triggered automatically on pushes to `main` or manually via “Run workflow”).
-3. Download the `sg-jobs-build.zip` artifact and upload it through **Plugins → Install → Upload Plugin** in WordPress.
-
-### Option B: Build locally and upload the ZIP
-
-1. Download or clone this repository to your computer.
-2. Run the dependency and build steps inside the plugin directory:
-
-   ```bash
-   composer install --no-dev --optimize-autoloader
-   npm ci
-   npm run build
-   ```
-
-3. Create an archive that keeps the generated `vendor/` folder:
-
-   ```bash
-   zip -r sg-jobs.zip . -x '.git/*' '.github/*' 'node_modules/*' 'tests/*'
-   ```
-
-4. Upload `sg-jobs.zip` through **Plugins → Install → Upload Plugin** in WordPress.
-
-The repository also ships a `make zip` target that performs steps 2–3 and places the result in `artifact/sg-jobs-build.zip`. This is the same process the GitHub workflow runs before publishing the artifact.
-
-### Option C: Install dependencies directly on the server
-
-If you have SSH access to the WordPress host, copy the repository to `wp-content/plugins/sg-jobs`, then run:
+Before uploading the plugin through the WordPress admin, build a distributable package that already contains Composer dependencies:
 
 ```bash
-cd wp-content/plugins/sg-jobs
 composer install --no-dev --optimize-autoloader
-npm ci
+npm install
 npm run build
+zip -r sg-jobs.zip . -x 'node_modules/*' 'tests/*'
 ```
 
-This installs the Composer autoloader and rebuilds the production assets in place.
-
-After either option, activate **SG Jobs** from the WordPress admin.
+Upload the generated `sg-jobs.zip` via **Plugins → Install → Upload Plugin** or copy the directory (including the `vendor/` folder) to `wp-content/plugins/sg-jobs`.
 
 ## Development setup
 
