@@ -13,13 +13,61 @@ SG Jobs bridges bexio delivery notes with a scheduling cockpit and mobile job ex
 ## Onboarding
 
 1. **Plugin aktivieren** – Lade das Plugin nach `wp-content/plugins` und aktiviere **SG Jobs** im WordPress-Backend. Aktivierung legt benötigte Tabellen und Cronjobs an.
-2. **JWT Secret setzen** – Navigiere zu **Einstellungen → SG Jobs** und hinterlege ein mindestens 32 Zeichen langes Secret für Magic Links. Das Secret wird ausschließlich serverseitig verwendet und darf nicht in Repos oder Dokus landen.
+2. **JWT Secret setzen** – Navigiere zu **Einstellungen → SG Jobs** und hinterlege ein mindestens 32 Zeichen langes Secret für Magic Links. Das Secret wird ausschließlich serverseitig verwendet und darf nicht in Repos oder Dokus landen; bis es gesetzt ist, blendet WordPress eine rote Hinweisbox ein.
 3. **CalDAV Basisdaten eintragen** – Trage Basis-URL, Service-User und Passwort für den CalDAV-Zugang ein. Optionale Secrets können über `wp-config.php` oder ENV-Variablen gesetzt werden.
 4. **Kalender teilen** – Teile die Team-Kalender im Nextcloud/CalDAV Backend vom Owner an den Service-User (z. B. `caldav-sync`) mit Bearbeitungsrechten.
 5. **Gemountete Pfade übernehmen** – Verwende die vom Service-User gemounteten Pfade (`/remote.php/dav/calendars/caldav-sync/...`) für Ausführungs- und Blocker-Kalender, damit Cronjobs und Clients konsistent zugreifen können.
 6. **Teams eintragen** – Erfasse in den Einstellungen jedes Team mit CalDAV-Principal, Execution- und Blocker-Slug. Lege die Slugs exakt wie in Nextcloud an; ein Hinweis im UI erinnert daran.
 7. **Healthcheck ausführen** – Nutze den Healthcheck im Admin („Test CalDAV/Bexio“), um Anmelde- und Freigabeprobleme zu erkennen. Ergebnisse werden farblich nach HTTP-Status codiert.
 8. **Dispo-Board testen** – Rufe das Dispo-Board mit dem Shortcode `[sg_jobs_board]` auf (erfordert Capability `sgjobs_manage`) und führe einen Testlauf durch. Prüfe außerdem das Installer-Board über `[sg_jobs_mine]`.
+
+## Deployment package
+
+WordPress must see `vendor/autoload.php` inside the plugin directory. A plain GitHub ZIP does not contain Composer dependencies, so you need to build a release package first. Every push to `main` produces a ready-to-install archive via the **Build release package** GitHub workflow, and you can also build it yourself when needed.
+
+### Option A: Download the automated package
+
+1. Open [GitHub → Actions → Build release package](https://github.com/sg-on-wordpress/sg-jobs/actions/workflows/release-package.yml).
+2. Pick the latest successful run (triggered automatically on pushes to `main` or manually via “Run workflow”).
+3. Download the `sg-jobs-build.zip` artifact and upload it through **Plugins → Install → Upload Plugin** in WordPress.
+
+The ZIP already bundles Composer dependencies (`vendor/`) and the production build, so you only need to upload this single plugin package—no second helper plugin is required.
+
+### Option B: Build locally and upload the ZIP
+
+1. Download or clone this repository to your computer.
+2. Run the dependency and build steps inside the plugin directory:
+
+   ```bash
+   composer install --no-dev --optimize-autoloader
+   npm ci
+   npm run build
+   ```
+
+3. Create an archive that keeps the generated `vendor/` folder:
+
+   ```bash
+   zip -r sg-jobs.zip . -x '.git/*' '.github/*' 'node_modules/*' 'tests/*'
+   ```
+
+4. Upload `sg-jobs.zip` through **Plugins → Install → Upload Plugin** in WordPress.
+
+The repository also ships a `make zip` target that performs steps 2–3 and places the result in `artifact/sg-jobs-build.zip`. This is the same process the GitHub workflow runs before publishing the artifact.
+
+### Option C: Install dependencies directly on the server
+
+If you have SSH access to the WordPress host, copy the repository to `wp-content/plugins/sg-jobs`, then run:
+
+```bash
+cd wp-content/plugins/sg-jobs
+composer install --no-dev --optimize-autoloader
+npm ci
+npm run build
+```
+
+This installs the Composer autoloader and rebuilds the production assets in place.
+
+After either option, activate **SG Jobs** from the WordPress admin.
 
 ## Development setup
 

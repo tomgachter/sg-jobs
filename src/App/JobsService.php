@@ -86,7 +86,12 @@ class JobsService
             ]);
         }
 
-        $token = $this->jwt->createToken(['job_id' => $jobId, 'sub' => 'job:' . $jobId]);
+        $tokenResult = $this->jwt->createToken(['job_id' => $jobId, 'sub' => 'job:' . $jobId]);
+        if ($tokenResult instanceof WP_Error) {
+            return $tokenResult;
+        }
+
+        $token = $tokenResult;
         $publicUrl = home_url('/jobs/' . rawurlencode($token));
 
         $jobRow = $this->getJobById($jobId);

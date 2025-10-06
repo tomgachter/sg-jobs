@@ -10,6 +10,7 @@ use SGJobs\App\Sync\BexioPaymentSync;
 use SGJobs\Http\Api\HealthController;
 use SGJobs\Http\Api\JobsController;
 use SGJobs\Http\Api\MagicLinkController;
+use SGJobs\Infra\Security\JwtService;
 use SGJobs\Ui\Board\BoardController;
 use SGJobs\Ui\JobSheet\JobSheetController;
 use WP_Error;
@@ -57,6 +58,9 @@ class Bootstrap
         (new HealthController())->registerRoutes();
         (new BoardController())->register();
         (new JobSheetController())->register();
+
+        add_action('admin_notices', [$this, 'maybeShowJwtSecretNotice']);
+        add_action('network_admin_notices', [$this, 'maybeShowJwtSecretNotice']);
 
         add_action('sg_jobs_bexio_payment_sync', [$this, 'handlePaymentSync']);
         if (! wp_next_scheduled('sg_jobs_bexio_payment_sync')) {
@@ -151,5 +155,23 @@ class Bootstrap
                 update_option('sg_jobs_jwt_expire_days', $expiry, false);
             }
         }
+    }
+
+    public function maybeShowJwtSecretNotice(): void
+    {
+        if (! current_user_can('manage_options')) {
+            return;
+        }
+
+        $jwt = new JwtService();
+        if ($jwt->hasSecret()) {
+            return;
+        }
+
+        echo '<div class="notice notice-error"><p>';
+        echo wp_kses_post(
+            __('SG Jobs requires a JWT secret. Set a long secret under <strong>Settings → SG Jobs</strong> to issue installer magic links.', 'sg-jobs')
+        );
+        echo '</p></div>';
     }
 }
