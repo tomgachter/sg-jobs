@@ -13,7 +13,7 @@ SG Jobs bridges bexio delivery notes with a scheduling cockpit and mobile job ex
 ## Onboarding
 
 1. **Plugin aktivieren** – Lade das Plugin nach `wp-content/plugins` und aktiviere **SG Jobs** im WordPress-Backend. Aktivierung legt benötigte Tabellen und Cronjobs an.
-2. **JWT Secret setzen** – Navigiere zu **Einstellungen → SG Jobs** und hinterlege ein mindestens 32 Zeichen langes Secret für Magic Links. Das Secret wird ausschließlich serverseitig verwendet und darf nicht in Repos oder Dokus landen.
+2. **JWT Secret setzen** – Navigiere zu **Einstellungen → SG Jobs** und hinterlege ein mindestens 32 Zeichen langes Secret für Magic Links. Das Secret wird ausschließlich serverseitig verwendet und darf nicht in Repos oder Dokus landen; bis es gesetzt ist, blendet WordPress eine rote Hinweisbox ein.
 3. **CalDAV Basisdaten eintragen** – Trage Basis-URL, Service-User und Passwort für den CalDAV-Zugang ein. Optionale Secrets können über `wp-config.php` oder ENV-Variablen gesetzt werden.
 4. **Kalender teilen** – Teile die Team-Kalender im Nextcloud/CalDAV Backend vom Owner an den Service-User (z. B. `caldav-sync`) mit Bearbeitungsrechten.
 5. **Gemountete Pfade übernehmen** – Verwende die vom Service-User gemounteten Pfade (`/remote.php/dav/calendars/caldav-sync/...`) für Ausführungs- und Blocker-Kalender, damit Cronjobs und Clients konsistent zugreifen können.

@@ -10,7 +10,7 @@ use WP_Error;
 
 class JwtService
 {
-    private string $secret;
+    private ?string $secret;
 
     private int $expiryDays;
 
@@ -39,13 +39,7 @@ class JwtService
             }
         }
 
-        if ($secret === '') {
-            wp_die(
-                'SG Jobs: JWT Secret ist nicht konfiguriert. Bitte unter <strong>Einstellungen → SG Jobs</strong> ein langes Secret setzen.'
-            );
-        }
-
-        $this->secret = $secret;
+        $this->secret = $secret !== '' ? $secret : null;
 
         if (! is_int($expiryDays) || $expiryDays <= 0) {
             $optionExpiry = get_option('sg_jobs_jwt_expire_days', null);
@@ -71,23 +65,45 @@ class JwtService
         $this->expiryDays = ($expiryDays && $expiryDays > 0) ? $expiryDays : 14;
     }
 
-    public function createToken(array $claims): string
+    public function hasSecret(): bool
     {
+        return $this->secret !== null && $this->secret !== '';
+    }
+
+    public function createToken(array $claims): string|WP_Error
+    {
+        if (! $this->hasSecret()) {
+            return $this->missingSecretError();
+        }
+
         $payload = array_merge($claims, [
             'iat' => time(),
             'exp' => time() + ($this->expiryDays * DAY_IN_SECONDS),
             'nonce' => wp_generate_password(12, false),
         ]);
 
-        return JWT::encode($payload, $this->secret, 'HS256');
+        return JWT::encode($payload, (string) $this->secret, 'HS256');
     }
 
     public function validateToken(string $token): array|WP_Error
     {
+        if (! $this->hasSecret()) {
+            return $this->missingSecretError();
+        }
+
         try {
-            return (array) JWT::decode($token, new Key($this->secret, 'HS256'));
+            return (array) JWT::decode($token, new Key((string) $this->secret, 'HS256'));
         } catch (\Throwable $exception) {
             return new WP_Error('sg_jobs_invalid_token', $exception->getMessage());
         }
+    }
+
+    private function missingSecretError(): WP_Error
+    {
+        return new WP_Error(
+            'sg_jobs_missing_jwt_secret',
+            __('JWT secret is not configured. Set a long secret under Settings → SG Jobs.', 'sg-jobs'),
+            500
+        );
     }
 }
