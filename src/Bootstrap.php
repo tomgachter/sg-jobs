@@ -14,6 +14,7 @@ use SGJobs\Infra\Security\JwtService;
 use SGJobs\Ui\Board\BoardController;
 use SGJobs\Ui\JobSheet\JobSheetController;
 use WP_Error;
+use function sgj_normalize_teams_data;
 
 class Bootstrap
 {
@@ -129,12 +130,12 @@ class Bootstrap
 
     private function migrateTeamsOption(): void
     {
-        $value = get_option('sg_jobs_teams');
-        if (is_string($value)) {
-            $decoded = json_decode($value, true);
-            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
-                update_option('sg_jobs_teams', $decoded, false);
-            }
+        $raw = get_option('sg_jobs_teams', null);
+        $normalized = sgj_normalize_teams_data($raw);
+        $rawComparable = is_array($raw) ? array_values($raw) : [];
+
+        if (serialize($normalized) !== serialize($rawComparable)) {
+            update_option('sg_jobs_teams', $normalized, false);
         }
     }
 
