@@ -21,6 +21,19 @@ SG Jobs bridges bexio delivery notes with a scheduling cockpit and mobile job ex
 7. **Healthcheck ausführen** – Nutze den Healthcheck im Admin („Test CalDAV/Bexio“), um Anmelde- und Freigabeprobleme zu erkennen. Ergebnisse werden farblich nach HTTP-Status codiert.
 8. **Dispo-Board testen** – Rufe das Dispo-Board mit dem Shortcode `[sg_jobs_board]` auf (erfordert Capability `sgjobs_manage`) und führe einen Testlauf durch. Prüfe außerdem das Installer-Board über `[sg_jobs_mine]`.
 
+## Deployment package
+
+Before uploading the plugin through the WordPress admin, build a distributable package that already contains Composer dependencies:
+
+```bash
+composer install --no-dev --optimize-autoloader
+npm install
+npm run build
+zip -r sg-jobs.zip . -x 'node_modules/*' 'tests/*'
+```
+
+Upload the generated `sg-jobs.zip` via **Plugins → Install → Upload Plugin** or copy the directory (including the `vendor/` folder) to `wp-content/plugins/sg-jobs`.
+
 ## Development setup
 
 ```bash
