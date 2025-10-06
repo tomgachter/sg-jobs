@@ -21,7 +21,8 @@ if (! file_exists($autoload)) {
     $notice = static function (): void {
         echo '<div class="notice notice-error"><p>';
         echo esc_html__(
-            'SG Jobs requires Composer dependencies. Run "composer install --no-dev" in the plugin directory (locally before zipping or via SSH) so "vendor/autoload.php" exists, or upload a release package that already bundles vendor. See the README → "Deployment package" section for detailed steps.',
+            'SG Jobs requires Composer dependencies. Run "composer install --no-dev" before activating the plugin, '
+            . 'or upload a release package that already contains the vendor directory.',
             'sg-jobs'
         );
         echo '</p></div>';
