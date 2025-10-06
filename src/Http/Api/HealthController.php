@@ -10,6 +10,7 @@ use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_REST_Server;
+use function sgj_get_normalized_teams;
 
 class HealthController
 {
@@ -176,33 +177,7 @@ class HealthController
      */
     private function loadTeams(): array
     {
-        $teams = get_option('sg_jobs_teams', []);
-        if (is_string($teams)) {
-            $decoded = json_decode($teams, true);
-            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
-                $teams = $decoded;
-            }
-        }
-
-        if (! is_array($teams)) {
-            return [];
-        }
-
-        $normalized = [];
-        foreach ($teams as $team) {
-            if (! is_array($team)) {
-                continue;
-            }
-
-            $normalized[] = [
-                'name' => isset($team['name']) ? (string) $team['name'] : '',
-                'principal' => isset($team['principal']) ? (string) $team['principal'] : (isset($team['caldav_principal']) ? (string) $team['caldav_principal'] : ''),
-                'execution' => isset($team['execution']) ? (string) $team['execution'] : (isset($team['execution_path']) ? (string) $team['execution_path'] : (isset($team['calendar']) ? (string) $team['calendar'] : (isset($team['exec']) ? (string) $team['exec'] : ''))),
-                'blocker' => isset($team['blocker']) ? (string) $team['blocker'] : (isset($team['blocker_path']) ? (string) $team['blocker_path'] : ''),
-            ];
-        }
-
-        return $normalized;
+        return sgj_get_normalized_teams();
     }
 
     private function resolveCalendarUrl(string $baseUrl, string $path): string

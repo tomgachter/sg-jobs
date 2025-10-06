@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace SGJobs\Ui\JobSheet;
 
+use function sgj_enqueue_style_prefix;
+
 class JobSheetController
 {
     public function register(): void
@@ -26,8 +28,9 @@ class JobSheetController
 
     public function renderList(): string
     {
-        wp_enqueue_script('sg-jobs-sheet', plugins_url('dist/jobsheet.js', SGJOBS_PLUGIN_FILE), [], '0.1.0', true);
-        wp_enqueue_style('sg-jobs-sheet', plugins_url('dist/jobsheet.css', SGJOBS_PLUGIN_FILE), [], '0.1.0');
+        wp_enqueue_script('sgjobs-jobsheet');
+        sgj_enqueue_style_prefix('sgjobs-jobsheet-css-');
+
         return '<div id="sg-jobs-sheet"></div>';
     }
 
