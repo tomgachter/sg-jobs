@@ -15,7 +15,27 @@ if (! defined('ABSPATH')) {
     exit;
 }
 
-require_once __DIR__ . '/vendor/autoload.php';
+$autoload = __DIR__ . '/vendor/autoload.php';
+
+if (! file_exists($autoload)) {
+    $notice = static function (): void {
+        echo '<div class="notice notice-error"><p>';
+        echo esc_html__(
+            'SG Jobs requires Composer dependencies. Run "composer install --no-dev" in the plugin directory (locally before zipping or via SSH) so "vendor/autoload.php" exists, or upload a release package that already bundles vendor. See the README → "Deployment package" section for detailed steps.',
+            'sg-jobs'
+        );
+        echo '</p></div>';
+    };
+
+    if (function_exists('add_action')) {
+        add_action('admin_notices', $notice);
+        add_action('network_admin_notices', $notice);
+    }
+
+    return;
+}
+
+require_once $autoload;
 
 if (! defined('SGJOBS_MAIN_FILE')) {
     define('SGJOBS_MAIN_FILE', __FILE__);
